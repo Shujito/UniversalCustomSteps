@@ -24,7 +24,6 @@ import org.shujito.ucs.Crypto;
 import org.shujito.ucs.GsonWrapper;
 import org.shujito.ucs.JedisWrapper;
 import org.shujito.ucs.models.AccessToken;
-import org.shujito.ucs.models.ApiResponse;
 import org.shujito.ucs.models.PasswordSalt;
 import org.shujito.ucs.models.User;
 
@@ -78,22 +77,39 @@ public class Users
 	
 	@POST
 	@Path("login")
-	public ApiResponse login(User user) throws Exception
+	public Response login(User user) throws Exception
 	{
 		this.validateUser(user, new User.Validation(true, true, false, false));
 		this.lowerFields(user);
 		Jedis jedis = JedisWrapper.open();
+		this.checkUserExists(jedis, user);
+		user.id = jedis.hget("users", user.name);
+		this.compareCredentials(jedis, user);
+		AccessToken accessToken = this.generateAccessToken();
+		this.saveAccessToken(jedis, user, accessToken);
+		return Response.ok(accessToken).build();
+	}
+	
+	private void checkUserExists(Jedis jedis, User user)
+	{
 		// check if user exists
 		if (!jedis.hexists("users", user.name))
 			throw new ApiException("User does not exist", Status.NOT_FOUND.getStatusCode());
+	}
+	
+	private void compareCredentials(Jedis jedis, User user) throws Exception
+	{
 		// compare passwords
-		String userID = jedis.hget("users", user.name);
-		Map<String, String> passwordSaltMap = jedis.hgetAll("users:passwords:" + userID);
+		Map<String, String> passwordSaltMap = jedis.hgetAll("users:passwords:" + user.id);
 		JsonElement passwordSaltMapJson = this.gson.toJsonTree(passwordSaltMap);
 		PasswordSalt passwordSalt = this.gson.fromJson(passwordSaltMapJson, PasswordSalt.class);
 		PasswordSalt comparePasswordSalt = this.saltAndHash(user, passwordSalt.salt);
 		if (!passwordSalt.equals(comparePasswordSalt))
 			throw new ApiException("Invalid credentials", Status.NOT_ACCEPTABLE.getStatusCode());
+	}
+	
+	private AccessToken generateAccessToken() throws Exception
+	{
 		// generate access token
 		byte[] randomBytes = new byte[16];
 		new SecureRandom().nextBytes(randomBytes);
@@ -112,12 +128,16 @@ public class Users
 		AccessToken accessToken = new AccessToken();
 		accessToken.accessToken = Base64.encode(sha256tokenBytes);
 		accessToken.expires = new Date().getTime() + 604800000;
-		// save
-		jedis.hset("users:sessions:" + userID, AccessToken.ACCESS_TOKEN, accessToken.accessToken);
-		jedis.hset("users:sessions:" + userID, AccessToken.EXPIRES, accessToken.expires.toString());
-		throw new UnsupportedOperationException();
+		return accessToken;
 	}
 	
+	private void saveAccessToken(Jedis jedis, User user, AccessToken accessToken)
+	{
+		jedis.hset("users:sessions:" + user.id, AccessToken.ACCESS_TOKEN, accessToken.accessToken);
+		jedis.hset("users:sessions:" + user.id, AccessToken.EXPIRES, accessToken.expires.toString());
+	}
+	
+	//////
 	private void validateUser(User user, User.Validation validation)
 	{
 		if (user == null)
