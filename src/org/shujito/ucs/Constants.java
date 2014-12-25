@@ -16,5 +16,9 @@ public class Constants
 		public static final String MAIL_ALREADY_IN_USE = "Mail already in use";
 		public static final String USER_EXISTS = "User exists";
 		// logging in
+		public static final String USER_DOES_NOT_EXIST = "User does not exist";
+		public static final String INVALID_CREDENTIALS = "Invalid credentials";
+		// accessing
+		public static final String ACCESS_DENIED = "Access denied";
 	}
 }

@@ -5,12 +5,14 @@ import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -54,6 +56,7 @@ public class Users
 			JsonElement userMapJson = this.gson.toJsonTree(userMap);
 			User user = this.gson.fromJson(userMapJson, User.class);
 			user.id = entry;
+			//user.email = null;
 			usersList.add(user);
 		}
 		return Response.ok(usersList).build();
@@ -90,54 +93,23 @@ public class Users
 		return Response.ok(accessToken).build();
 	}
 	
-	private void checkUserExists(Jedis jedis, User user)
+	@GET
+	@Path("test_auth")
+	public Response testAuth(@HeaderParam("access-token") String accessToken)
 	{
-		// check if user exists
-		if (!jedis.hexists("users", user.name))
-			throw new ApiException("User does not exist", Status.NOT_FOUND.getStatusCode());
+		if (accessToken == null)
+			throw new ApiException(Constants.Strings.ACCESS_DENIED, Status.FORBIDDEN.getStatusCode());
+		Jedis jedis = JedisWrapper.open();
+		String userID = jedis.hget("session:" + accessToken, User.ID);
+		if (userID == null)
+			throw new ApiException(Constants.Strings.ACCESS_DENIED, Status.FORBIDDEN.getStatusCode());
+		String username = jedis.hget("user:" + userID, User.USERNAME);
+		Map<String, Object> messageMap = new HashMap<>();
+		messageMap.put("success", true);
+		messageMap.put("message", "hello, " + username);
+		return Response.ok(messageMap).build();
 	}
 	
-	private void compareCredentials(Jedis jedis, User user) throws Exception
-	{
-		// compare passwords
-		Map<String, String> passwordSaltMap = jedis.hgetAll("users:passwords:" + user.id);
-		JsonElement passwordSaltMapJson = this.gson.toJsonTree(passwordSaltMap);
-		PasswordSalt passwordSalt = this.gson.fromJson(passwordSaltMapJson, PasswordSalt.class);
-		PasswordSalt comparePasswordSalt = this.saltAndHash(user, passwordSalt.salt);
-		if (!passwordSalt.equals(comparePasswordSalt))
-			throw new ApiException("Invalid credentials", Status.NOT_ACCEPTABLE.getStatusCode());
-	}
-	
-	private AccessToken generateAccessToken() throws Exception
-	{
-		// generate access token
-		byte[] randomBytes = new byte[16];
-		new SecureRandom().nextBytes(randomBytes);
-		// more entropee
-		UUID uuid = UUID.randomUUID();
-		long leastLong = uuid.getLeastSignificantBits();
-		long mostLong = uuid.getMostSignificantBits();
-		// assemble token
-		byte[] tokenBytes = ByteBuffer.allocate(32)
-			.put(randomBytes)
-			.putLong(16, leastLong)
-			.putLong(16 + 8, mostLong)
-			.array();
-		// hash it
-		byte[] sha256tokenBytes = Crypto.sha256(tokenBytes);
-		AccessToken accessToken = new AccessToken();
-		accessToken.accessToken = Base64.encode(sha256tokenBytes);
-		accessToken.expires = new Date().getTime() + 604800000;
-		return accessToken;
-	}
-	
-	private void saveAccessToken(Jedis jedis, User user, AccessToken accessToken)
-	{
-		jedis.hset("users:sessions:" + user.id, AccessToken.ACCESS_TOKEN, accessToken.accessToken);
-		jedis.hset("users:sessions:" + user.id, AccessToken.EXPIRES, accessToken.expires.toString());
-	}
-	
-	//////
 	private void validateUser(User user, User.Validation validation)
 	{
 		if (user == null)
@@ -214,6 +186,62 @@ public class Users
 		transaction.hset("users:passwords:" + userID, PasswordSalt.SALT, passwordSalt.salt);
 		// emails
 		transaction.sadd("users:emails", user.email);
+		transaction.exec();
+	}
+	
+	private void checkUserExists(Jedis jedis, User user)
+	{
+		// check if user exists
+		if (!jedis.hexists("users", user.name))
+			throw new ApiException(Constants.Strings.USER_DOES_NOT_EXIST, Status.NOT_FOUND.getStatusCode());
+	}
+	
+	private void compareCredentials(Jedis jedis, User user) throws Exception
+	{
+		// compare passwords
+		Map<String, String> passwordSaltMap = jedis.hgetAll("users:passwords:" + user.id);
+		JsonElement passwordSaltMapJson = this.gson.toJsonTree(passwordSaltMap);
+		PasswordSalt passwordSalt = this.gson.fromJson(passwordSaltMapJson, PasswordSalt.class);
+		PasswordSalt comparePasswordSalt = this.saltAndHash(user, passwordSalt.salt);
+		if (!passwordSalt.equals(comparePasswordSalt))
+			throw new ApiException(Constants.Strings.INVALID_CREDENTIALS, Status.NOT_ACCEPTABLE.getStatusCode());
+	}
+	
+	private AccessToken generateAccessToken() throws Exception
+	{
+		// generate access token
+		byte[] randomBytes = new byte[16];
+		new SecureRandom().nextBytes(randomBytes);
+		// more entropee
+		UUID uuid = UUID.randomUUID();
+		long leastLong = uuid.getLeastSignificantBits();
+		long mostLong = uuid.getMostSignificantBits();
+		// assemble token
+		byte[] tokenBytes = ByteBuffer.allocate(32)
+			.put(randomBytes)
+			.putLong(16, leastLong)
+			.putLong(16 + 8, mostLong)
+			.array();
+		// hash it
+		byte[] sha256tokenBytes = Crypto.sha256(tokenBytes);
+		AccessToken accessToken = new AccessToken();
+		accessToken.accessToken = Base64.encode(sha256tokenBytes).substring(0, 43);
+		accessToken.expires = new Date().getTime() + 604800000;
+		return accessToken;
+	}
+	
+	private void saveAccessToken(Jedis jedis, User user, AccessToken accessToken)
+	{
+		//jedis.hset("users:sessions:" + user.id, AccessToken.ACCESS_TOKEN, accessToken.accessToken);
+		//jedis.hset("users:sessions:" + user.id, AccessToken.EXPIRES, accessToken.expires.toString());
+		Transaction transaction = jedis.multi();
+		// session data
+		transaction.hset("session:" + accessToken.accessToken, AccessToken.EXPIRES, accessToken.expires.toString());
+		transaction.hset("session:" + accessToken.accessToken, User.ID, user.id);
+		// expire
+		transaction.pexpireAt("session:" + accessToken.accessToken, accessToken.expires);
+		// add to user's sessions
+		transaction.rpush("sessions:" + user.id, accessToken.accessToken);
 		transaction.exec();
 	}
 }
