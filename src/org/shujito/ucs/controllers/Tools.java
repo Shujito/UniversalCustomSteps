@@ -12,14 +12,14 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("tools")
+@Path("/tools")
 @Produces(MediaType.APPLICATION_JSON)
 public class Tools
 {
 	public static final String TAG = Tools.class.getSimpleName();
 	
 	@GET
-	@Path("user_agent")
+	@Path("/user_agent")
 	public Response userAgent(@Context HttpServletRequest request, @HeaderParam("user-agent") String userAgent)
 	{
 		Map<String, String> map = new HashMap<>();

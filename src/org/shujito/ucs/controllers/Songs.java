@@ -10,7 +10,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.shujito.ucs.ApiException;
 
-@Path("songs")
+@Path("/songs")
 @Produces(MediaType.APPLICATION_JSON)
 public class Songs
 {
@@ -32,7 +32,7 @@ public class Songs
 	 * @return a single song object
 	 */
 	@GET
-	@Path("{id}")
+	@Path("/{id}")
 	public Response get(@PathParam("id") String id)
 	{
 		throw new ApiException(null, Status.NOT_IMPLEMENTED.getStatusCode());

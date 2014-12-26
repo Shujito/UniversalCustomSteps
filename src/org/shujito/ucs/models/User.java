@@ -1,8 +1,21 @@
 package org.shujito.ucs.models;
 
-import org.shujito.ucs.Constants;
+import java.util.Map;
 
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.core.Response.Status;
+
+import org.shujito.ucs.ApiException;
+import org.shujito.ucs.Constants;
+import org.shujito.ucs.Crypto;
+import org.shujito.ucs.GsonWrapper;
+import org.shujito.ucs.JedisWrapper;
+
+import redis.clients.jedis.Jedis;
+
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import com.sun.org.apache.xml.internal.security.utils.Base64;
 
 public class User
 {
@@ -11,14 +24,12 @@ public class User
 		public final boolean username;
 		public final boolean password;
 		public final boolean email;
-		public final boolean token;
 		
 		public Validation()
 		{
 			this.username = false;
 			this.password = false;
 			this.email = false;
-			this.token = false;
 		}
 		
 		public Validation(boolean username, boolean password, boolean email, boolean token)
@@ -26,7 +37,6 @@ public class User
 			this.username = username;
 			this.password = password;
 			this.email = email;
-			this.token = token;
 		}
 	}
 	
@@ -36,7 +46,6 @@ public class User
 	public static final String USERNAME = "username";
 	public static final String PASSWORD = "password";
 	public static final String EMAIL = "email";
-	public static final String TOKEN = "token";
 	public static final String CREATED = "created";
 	@SerializedName(value = ID)
 	public String id;
@@ -48,10 +57,35 @@ public class User
 	public String password;
 	@SerializedName(value = EMAIL)
 	public String email;
-	@SerializedName(value = TOKEN)
-	public String token;
 	@SerializedName(value = CREATED)
 	public Long created;
+	
+	public User()
+	{
+	}
+	
+	public User(@HeaderParam("access-token") String accessToken, @HeaderParam("user-agent") String userAgent) throws Exception
+	{
+		if (accessToken == null)
+			throw new ApiException(Constants.Strings.ACCESS_DENIED, Status.FORBIDDEN.getStatusCode());
+		byte[] accessTokenBytes = Base64.decode(accessToken);
+		byte[] sha256accessTokenBytes = Crypto.sha256(accessTokenBytes);
+		String sha256accessTokenString = Base64.encode(sha256accessTokenBytes);
+		Jedis jedis = JedisWrapper.open();
+		this.id = jedis.hget("session:" + sha256accessTokenString, User.ID);
+		if (this.id == null)
+			throw new ApiException(Constants.Strings.ACCESS_DENIED, Status.FORBIDDEN.getStatusCode());
+		Gson gson = GsonWrapper.getInstance().getGson();
+		Map<String, String> userMap = jedis.hgetAll("user:" + this.id);
+		String userMapJson = gson.toJson(userMap);
+		User user = gson.fromJson(userMapJson, User.class);
+		this.id = user.id;
+		this.displayName = user.displayName;
+		this.username = user.username;
+		this.password = user.password;
+		this.email = user.email;
+		this.created = user.created;
+	}
 	
 	public String validate(Validation require)
 	{
@@ -68,18 +102,10 @@ public class User
 		{
 			return Constants.Strings.NO_EMAIL_SPECIFIED;
 		}
-		if (require.token && this.token == null)
-		{
-			return Constants.Strings.NO_TOKEN_SPECIFIED;
-		}
 		// lengths
 		if (require.password && this.password.length() < 10)
 		{
 			return Constants.Strings.PASSWORD_IS_TOO_SHORT;
-		}
-		if (require.token && this.token.length() != 64)
-		{
-			return Constants.Strings.TOKEN_MUST_BE_64_CHARACTERS_LONG;
 		}
 		return null;
 	}

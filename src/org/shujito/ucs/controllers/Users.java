@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -37,7 +38,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.sun.org.apache.xml.internal.security.utils.Base64;
 
-@Path("users")
+@Path("/users")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class Users
@@ -60,7 +61,7 @@ public class Users
 	}
 	
 	@GET
-	@Path("{userID}")
+	@Path("/{userID}")
 	public Response user(@PathParam("userID") String userID)
 	{
 		if (userID.length() != 32)
@@ -72,20 +73,8 @@ public class Users
 		return Response.ok(user).build();
 	}
 	
-	private User getUser(Jedis jedis, String userID)
-	{
-		Map<String, String> userMap = jedis.hgetAll("user:" + userID);
-		JsonElement userMapJson = this.gson.toJsonTree(userMap);
-		User user = this.gson.fromJson(userMapJson, User.class);
-		user.id = userID;
-		user.email = null;
-		user.username = user.displayName;
-		user.displayName = null;
-		return user;
-	}
-	
 	@POST
-	@Path("register")
+	@Path("/register")
 	public Response register(User user) throws Exception
 	{
 		this.validateUser(user, new User.Validation(true, true, true, false));
@@ -103,7 +92,7 @@ public class Users
 	}
 	
 	@POST
-	@Path("login")
+	@Path("/login")
 	public Response login(User user) throws Exception
 	{
 		this.validateUser(user, new User.Validation(true, true, false, false));
@@ -118,29 +107,19 @@ public class Users
 	}
 	
 	@POST
-	@Path("logout")
+	@Path("/logout")
 	public Response logout(@HeaderParam("access-token") String accessToken)
 	{
 		return Response.ok().build();
 	}
 	
 	@GET
-	@Path("test_auth")
-	public Response testAuth(@HeaderParam("access-token") String accessToken) throws Exception
+	@Path("/test_auth")
+	public Response beanAuth(@BeanParam User user) throws Exception
 	{
-		if (accessToken == null)
-			throw new ApiException(Constants.Strings.ACCESS_DENIED, Status.FORBIDDEN.getStatusCode());
-		byte[] accessTokenBytes = Base64.decode(accessToken);
-		byte[] sha256accessTokenBytes = Crypto.sha256(accessTokenBytes);
-		String sha256accessTokenString = Base64.encode(sha256accessTokenBytes);
-		Jedis jedis = JedisWrapper.open();
-		String userID = jedis.hget("session:" + sha256accessTokenString, User.ID);
-		if (userID == null)
-			throw new ApiException(Constants.Strings.ACCESS_DENIED, Status.FORBIDDEN.getStatusCode());
-		String username = jedis.hget("user:" + userID, User.DISPLAY_NAME);
 		Map<String, Object> messageMap = new HashMap<>();
 		messageMap.put("success", true);
-		messageMap.put("message", "Hello, " + username + "!");
+		messageMap.put("message", "Hello, " + user.displayName + "!");
 		return Response.ok(messageMap).build();
 	}
 	
@@ -193,10 +172,16 @@ public class Users
 			saltedPasswordBytes[idx + saltBytes.length] = passwordBytes[idx];
 		// hash password
 		byte[] sha256passwordBytes = Crypto.sha256(saltedPasswordBytes);
+		// ah
+		byte[] bytesContainer = new byte[sha256passwordBytes.length + saltBytes.length];
 		// stretchy
-		for (int idx = 0; idx < 0xffff; idx++)
+		for (int idx = 0; idx < 0x7ffff; idx++)
 		{
-			sha256passwordBytes = Crypto.sha256(sha256passwordBytes);
+			for (int jdx = 0; jdx < saltBytes.length; jdx++)
+				bytesContainer[jdx] = saltBytes[jdx];
+			for (int jdx = 0; jdx < sha256passwordBytes.length; jdx++)
+				bytesContainer[jdx + saltBytes.length] = sha256passwordBytes[jdx];
+			sha256passwordBytes = Crypto.sha256(bytesContainer);
 		}
 		PasswordSalt passwordSalt = new PasswordSalt();
 		passwordSalt.password = Base64.encode(sha256passwordBytes);
@@ -265,8 +250,6 @@ public class Users
 	
 	private void saveAccessToken(Jedis jedis, User user, AccessToken accessToken) throws Exception
 	{
-		//jedis.hset("users:sessions:" + user.id, AccessToken.ACCESS_TOKEN, accessToken.accessToken);
-		//jedis.hset("users:sessions:" + user.id, AccessToken.EXPIRES, accessToken.expires.toString());
 		byte[] sha256tokenBytes = Crypto.sha256(accessToken.accessToken);
 		String base64sha256token = Base64.encode(sha256tokenBytes);
 		Transaction transaction = jedis.multi();
@@ -274,10 +257,21 @@ public class Users
 		transaction.hset("session:" + base64sha256token, AccessToken.EXPIRES, accessToken.expires.toString());
 		transaction.hset("session:" + base64sha256token, User.ID, user.id);
 		// expire
-		transaction.pexpireAt("session:" + accessToken.accessToken, accessToken.expires);
+		transaction.pexpireAt("session:" + base64sha256token, accessToken.expires);
 		// add to user's sessions
-		//transaction.rpush(("sessions:" + user.id).getBytes(), sha256tokenBytes);
 		transaction.rpush("sessions:" + user.id, base64sha256token);
 		transaction.exec();
+	}
+	
+	private User getUser(Jedis jedis, String userID)
+	{
+		Map<String, String> userMap = jedis.hgetAll("user:" + userID);
+		JsonElement userMapJson = this.gson.toJsonTree(userMap);
+		User user = this.gson.fromJson(userMapJson, User.class);
+		user.id = userID;
+		user.email = null;
+		user.username = user.displayName;
+		user.displayName = null;
+		return user;
 	}
 }
