@@ -15,6 +15,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -52,14 +53,35 @@ public class Users
 		Map<String, String> usersMap = jedis.hgetAll("users");
 		for (String entry : usersMap.values())
 		{
-			Map<String, String> userMap = jedis.hgetAll("user:" + entry);
-			JsonElement userMapJson = this.gson.toJsonTree(userMap);
-			User user = this.gson.fromJson(userMapJson, User.class);
-			user.id = entry;
-			//user.email = null;
+			User user = this.getUser(jedis, entry);
 			usersList.add(user);
 		}
 		return Response.ok(usersList).build();
+	}
+	
+	@GET
+	@Path("{userID}")
+	public Response user(@PathParam("userID") String userID)
+	{
+		if (userID.length() != 32)
+			throw new ApiException(Status.NOT_FOUND.getReasonPhrase(), Status.NOT_FOUND.getStatusCode());
+		Jedis jedis = JedisWrapper.open();
+		if (!jedis.exists("user:" + userID))
+			throw new ApiException(Constants.Strings.USER_DOES_NOT_EXIST, Status.FORBIDDEN.getStatusCode());
+		User user = this.getUser(jedis, userID);
+		return Response.ok(user).build();
+	}
+	
+	private User getUser(Jedis jedis, String userID)
+	{
+		Map<String, String> userMap = jedis.hgetAll("user:" + userID);
+		JsonElement userMapJson = this.gson.toJsonTree(userMap);
+		User user = this.gson.fromJson(userMapJson, User.class);
+		user.id = userID;
+		user.email = null;
+		user.username = user.displayName;
+		user.displayName = null;
+		return user;
 	}
 	
 	@POST
@@ -71,8 +93,10 @@ public class Users
 		Jedis jedis = JedisWrapper.open();
 		this.checkExisting(jedis, user);
 		PasswordSalt passwordSalt = this.saltAndHash(user);
-		this.saveUserData(jedis, user, passwordSalt);
-		URI resourceUri = URI.create("users/" + user.username);
+		user.id = this.saveUserData(jedis, user, passwordSalt);
+		user.password = null;
+		user.displayName = null;
+		URI resourceUri = URI.create("users/" + user.id);
 		return Response.created(resourceUri)
 			.entity(user)
 			.build();
@@ -86,27 +110,37 @@ public class Users
 		this.lowerFields(user);
 		Jedis jedis = JedisWrapper.open();
 		this.checkUserExists(jedis, user);
-		user.id = jedis.hget("users", user.name);
+		user.id = jedis.hget("users", user.username);
 		this.compareCredentials(jedis, user);
 		AccessToken accessToken = this.generateAccessToken();
 		this.saveAccessToken(jedis, user, accessToken);
 		return Response.ok(accessToken).build();
 	}
 	
+	@POST
+	@Path("logout")
+	public Response logout(@HeaderParam("access-token") String accessToken)
+	{
+		return Response.ok().build();
+	}
+	
 	@GET
 	@Path("test_auth")
-	public Response testAuth(@HeaderParam("access-token") String accessToken)
+	public Response testAuth(@HeaderParam("access-token") String accessToken) throws Exception
 	{
 		if (accessToken == null)
 			throw new ApiException(Constants.Strings.ACCESS_DENIED, Status.FORBIDDEN.getStatusCode());
+		byte[] accessTokenBytes = Base64.decode(accessToken);
+		byte[] sha256accessTokenBytes = Crypto.sha256(accessTokenBytes);
+		String sha256accessTokenString = Base64.encode(sha256accessTokenBytes);
 		Jedis jedis = JedisWrapper.open();
-		String userID = jedis.hget("session:" + accessToken, User.ID);
+		String userID = jedis.hget("session:" + sha256accessTokenString, User.ID);
 		if (userID == null)
 			throw new ApiException(Constants.Strings.ACCESS_DENIED, Status.FORBIDDEN.getStatusCode());
-		String username = jedis.hget("user:" + userID, User.USERNAME);
+		String username = jedis.hget("user:" + userID, User.DISPLAY_NAME);
 		Map<String, Object> messageMap = new HashMap<>();
 		messageMap.put("success", true);
-		messageMap.put("message", "hello, " + username);
+		messageMap.put("message", "Hello, " + username + "!");
 		return Response.ok(messageMap).build();
 	}
 	
@@ -121,7 +155,7 @@ public class Users
 	
 	private void lowerFields(User user)
 	{
-		user.name = user.username;
+		user.displayName = user.username;
 		if (user.username != null)
 			user.username = user.username.toLowerCase();
 		if (user.email != null)
@@ -132,7 +166,7 @@ public class Users
 	{
 		if (jedis.sismember("users:emails", user.email))
 			throw new ApiException(Constants.Strings.MAIL_ALREADY_IN_USE, Status.CONFLICT.getStatusCode());
-		if (jedis.hexists("users", user.name))
+		if (jedis.hexists("users", user.username))
 			throw new ApiException(Constants.Strings.USER_EXISTS, Status.CONFLICT.getStatusCode());
 	}
 	
@@ -170,29 +204,30 @@ public class Users
 		return passwordSalt;
 	}
 	
-	private void saveUserData(Jedis jedis, User user, PasswordSalt passwordSalt)
+	private String saveUserData(Jedis jedis, User user, PasswordSalt passwordSalt)
 	{
 		String userID = UUID.randomUUID().toString().replace("-", "");
 		user.created = new Date().getTime();
 		Transaction transaction = jedis.multi();
-		transaction.hset("user:" + userID, User.NAME, user.name);
+		transaction.hset("user:" + userID, User.DISPLAY_NAME, user.displayName);
 		transaction.hset("user:" + userID, User.USERNAME, user.username);
 		transaction.hset("user:" + userID, User.EMAIL, user.email);
 		transaction.hset("user:" + userID, User.CREATED, user.created.toString());
 		// users index
-		transaction.hset("users", user.name, userID);
+		transaction.hset("users", user.username, userID);
 		// password
 		transaction.hset("users:passwords:" + userID, PasswordSalt.PASSWORD, passwordSalt.password);
 		transaction.hset("users:passwords:" + userID, PasswordSalt.SALT, passwordSalt.salt);
 		// emails
 		transaction.sadd("users:emails", user.email);
 		transaction.exec();
+		return userID;
 	}
 	
 	private void checkUserExists(Jedis jedis, User user)
 	{
 		// check if user exists
-		if (!jedis.hexists("users", user.name))
+		if (!jedis.hexists("users", user.username))
 			throw new ApiException(Constants.Strings.USER_DOES_NOT_EXIST, Status.NOT_FOUND.getStatusCode());
 	}
 	
@@ -222,26 +257,27 @@ public class Users
 			.putLong(16, leastLong)
 			.putLong(16 + 8, mostLong)
 			.array();
-		// hash it
-		byte[] sha256tokenBytes = Crypto.sha256(tokenBytes);
 		AccessToken accessToken = new AccessToken();
-		accessToken.accessToken = Base64.encode(sha256tokenBytes).substring(0, 43);
+		accessToken.accessToken = tokenBytes;
 		accessToken.expires = new Date().getTime() + 604800000;
 		return accessToken;
 	}
 	
-	private void saveAccessToken(Jedis jedis, User user, AccessToken accessToken)
+	private void saveAccessToken(Jedis jedis, User user, AccessToken accessToken) throws Exception
 	{
 		//jedis.hset("users:sessions:" + user.id, AccessToken.ACCESS_TOKEN, accessToken.accessToken);
 		//jedis.hset("users:sessions:" + user.id, AccessToken.EXPIRES, accessToken.expires.toString());
+		byte[] sha256tokenBytes = Crypto.sha256(accessToken.accessToken);
+		String base64sha256token = Base64.encode(sha256tokenBytes);
 		Transaction transaction = jedis.multi();
 		// session data
-		transaction.hset("session:" + accessToken.accessToken, AccessToken.EXPIRES, accessToken.expires.toString());
-		transaction.hset("session:" + accessToken.accessToken, User.ID, user.id);
+		transaction.hset("session:" + base64sha256token, AccessToken.EXPIRES, accessToken.expires.toString());
+		transaction.hset("session:" + base64sha256token, User.ID, user.id);
 		// expire
 		transaction.pexpireAt("session:" + accessToken.accessToken, accessToken.expires);
 		// add to user's sessions
-		transaction.rpush("sessions:" + user.id, accessToken.accessToken);
+		//transaction.rpush(("sessions:" + user.id).getBytes(), sha256tokenBytes);
+		transaction.rpush("sessions:" + user.id, base64sha256token);
 		transaction.exec();
 	}
 }

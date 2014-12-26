@@ -32,7 +32,7 @@ public class User
 	
 	public static final String TAG = User.class.getSimpleName();
 	public static final String ID = "id";
-	public static final String NAME = "name";
+	public static final String DISPLAY_NAME = "display_name";
 	public static final String USERNAME = "username";
 	public static final String PASSWORD = "password";
 	public static final String EMAIL = "email";
@@ -40,8 +40,8 @@ public class User
 	public static final String CREATED = "created";
 	@SerializedName(value = ID)
 	public String id;
-	@SerializedName(value = NAME)
-	public String name;
+	@SerializedName(value = DISPLAY_NAME)
+	public String displayName;
 	@SerializedName(value = USERNAME)
 	public String username;
 	@SerializedName(value = PASSWORD)
@@ -73,7 +73,7 @@ public class User
 			return Constants.Strings.NO_TOKEN_SPECIFIED;
 		}
 		// lengths
-		if (require.password && this.password.length() < 8)
+		if (require.password && this.password.length() < 10)
 		{
 			return Constants.Strings.PASSWORD_IS_TOO_SHORT;
 		}
