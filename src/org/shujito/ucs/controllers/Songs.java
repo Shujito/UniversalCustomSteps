@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.shujito.ucs.ApiException;
+import org.shujito.ucs.models.Group;
 import org.shujito.ucs.models.Song;
 
 @Path("/songs")
@@ -23,10 +24,12 @@ public class Songs
 	public static final String TAG = Songs.class.getSimpleName();
 	public static final List<Song> songs;
 	public static final Map<Integer, Song> songIndexes;
+	public static final List<Group> songGroups;
 	static
 	{
 		songs = new ArrayList<>();
-		songIndexes = new HashMap<Integer, Song>();
+		songIndexes = new HashMap<>();
+		songGroups = new ArrayList<>();
 		/* 1st - 3rd */
 		songs.add(new Song(0x204, "CS002", 130.5, 1920, "BanYa", "Final Audition"));
 		songs.add(new Song(0x205, "CS001", 195, 3805, "BanYa", "EXtravaganza"));
@@ -340,6 +343,189 @@ public class Songs
 		songIndexes.put(0x1311, songs.get(147));
 		songIndexes.put(0x1312, songs.get(148));
 		songIndexes.put(0x1313, songs.get(149));
+		/* 1st - 3rd */
+		final List<Song> _1stTo3rd = new ArrayList<>();
+		_1stTo3rd.add(songIndexes.get(0x204));
+		_1stTo3rd.add(songIndexes.get(0x205));
+		_1stTo3rd.add(songIndexes.get(0x301));
+		_1stTo3rd.add(songIndexes.get(0x302));
+		_1stTo3rd.add(songIndexes.get(0x303));
+		_1stTo3rd.add(songIndexes.get(0x306));
+		_1stTo3rd.add(songIndexes.get(0x307));
+		_1stTo3rd.add(songIndexes.get(0x308));
+		_1stTo3rd.add(songIndexes.get(0x309));
+		_1stTo3rd.add(songIndexes.get(0x310));
+		_1stTo3rd.add(songIndexes.get(0x311));
+		/* SE - Extra */
+		final List<Song> seToExtra = new ArrayList<>();
+		seToExtra.add(songIndexes.get(0x401));
+		seToExtra.add(songIndexes.get(0x403));
+		seToExtra.add(songIndexes.get(0x404));
+		seToExtra.add(songIndexes.get(0x405));
+		seToExtra.add(songIndexes.get(0x410));
+		seToExtra.add(songIndexes.get(0x501));
+		seToExtra.add(songIndexes.get(0x502));
+		seToExtra.add(songIndexes.get(0x503));
+		seToExtra.add(songIndexes.get(0x504));
+		seToExtra.add(songIndexes.get(0x505));
+		seToExtra.add(songIndexes.get(0x911));
+		seToExtra.add(songIndexes.get(0x922));
+		/* Rebirth - Prex3 */
+		final List<Song> rebirthToPrex3 = new ArrayList<>();
+		rebirthToPrex3.add(songIndexes.get(0x701));
+		rebirthToPrex3.add(songIndexes.get(0x702));
+		rebirthToPrex3.add(songIndexes.get(0x703));
+		rebirthToPrex3.add(songIndexes.get(0x704));
+		rebirthToPrex3.add(songIndexes.get(0x705));
+		rebirthToPrex3.add(songIndexes.get(0x706));
+		rebirthToPrex3.add(songIndexes.get(0x707));
+		rebirthToPrex3.add(songIndexes.get(0x708));
+		rebirthToPrex3.add(songIndexes.get(0x709));
+		rebirthToPrex3.add(songIndexes.get(0x710));
+		rebirthToPrex3.add(songIndexes.get(0x711));
+		rebirthToPrex3.add(songIndexes.get(0x712));
+		rebirthToPrex3.add(songIndexes.get(0x713));
+		rebirthToPrex3.add(songIndexes.get(0x714));
+		rebirthToPrex3.add(songIndexes.get(0x715));
+		rebirthToPrex3.add(songIndexes.get(0x716));
+		rebirthToPrex3.add(songIndexes.get(0x717));
+		rebirthToPrex3.add(songIndexes.get(0x718));
+		rebirthToPrex3.add(songIndexes.get(0x735));
+		rebirthToPrex3.add(songIndexes.get(0x736));
+		rebirthToPrex3.add(songIndexes.get(0x802));
+		rebirthToPrex3.add(songIndexes.get(0x807));
+		rebirthToPrex3.add(songIndexes.get(0x811));
+		rebirthToPrex3.add(songIndexes.get(0x820));
+		rebirthToPrex3.add(songIndexes.get(0x826));
+		/* Exceed - Zero */
+		final List<Song> exceedToZero = new ArrayList<>();
+		exceedToZero.add(songIndexes.get(0xA01));
+		exceedToZero.add(songIndexes.get(0xA02));
+		exceedToZero.add(songIndexes.get(0xA03));
+		exceedToZero.add(songIndexes.get(0xA04));
+		exceedToZero.add(songIndexes.get(0xA05));
+		exceedToZero.add(songIndexes.get(0xA06));
+		exceedToZero.add(songIndexes.get(0xA07));
+		exceedToZero.add(songIndexes.get(0xB16));
+		exceedToZero.add(songIndexes.get(0xB17));
+		exceedToZero.add(songIndexes.get(0xB18));
+		exceedToZero.add(songIndexes.get(0xB19));
+		exceedToZero.add(songIndexes.get(0xC01));
+		exceedToZero.add(songIndexes.get(0xC02));
+		exceedToZero.add(songIndexes.get(0xC03));
+		exceedToZero.add(songIndexes.get(0xC04));
+		exceedToZero.add(songIndexes.get(0xC05));
+		exceedToZero.add(songIndexes.get(0xC06));
+		exceedToZero.add(songIndexes.get(0xC1C04));
+		/* NX - NX2 */
+		final List<Song> nxToNx2 = new ArrayList<>();
+		nxToNx2.add(songIndexes.get(0xD01));
+		nxToNx2.add(songIndexes.get(0xD02));
+		nxToNx2.add(songIndexes.get(0xD03));
+		nxToNx2.add(songIndexes.get(0xD14));
+		nxToNx2.add(songIndexes.get(0xD15));
+		nxToNx2.add(songIndexes.get(0xD16));
+		nxToNx2.add(songIndexes.get(0xD17));
+		nxToNx2.add(songIndexes.get(0xD18));
+		nxToNx2.add(songIndexes.get(0xD28));
+		nxToNx2.add(songIndexes.get(0xD30));
+		nxToNx2.add(songIndexes.get(0xE01));
+		nxToNx2.add(songIndexes.get(0xE02));
+		nxToNx2.add(songIndexes.get(0xE03));
+		nxToNx2.add(songIndexes.get(0xE04));
+		nxToNx2.add(songIndexes.get(0xE05));
+		nxToNx2.add(songIndexes.get(0xE12));
+		nxToNx2.add(songIndexes.get(0xE13));
+		nxToNx2.add(songIndexes.get(0xE13B));
+		nxToNx2.add(songIndexes.get(0xE23));
+		nxToNx2.add(songIndexes.get(0xE24));
+		nxToNx2.add(songIndexes.get(0xE25));
+		/* NXA */
+		final List<Song> nxa = new ArrayList<>();
+		nxa.add(songIndexes.get(0xF01));
+		nxa.add(songIndexes.get(0xF02));
+		nxa.add(songIndexes.get(0xF03));
+		nxa.add(songIndexes.get(0xF22));
+		nxa.add(songIndexes.get(0xF23));
+		nxa.add(songIndexes.get(0xF24));
+		nxa.add(songIndexes.get(0xF25));
+		nxa.add(songIndexes.get(0xF26));
+		nxa.add(songIndexes.get(0xF29));
+		/* Fiesta */
+		final List<Song> fiesta = new ArrayList<>();
+		fiesta.add(songIndexes.get(0x1001));
+		fiesta.add(songIndexes.get(0x1002));
+		fiesta.add(songIndexes.get(0x1003));
+		fiesta.add(songIndexes.get(0x1008));
+		fiesta.add(songIndexes.get(0x1013));
+		fiesta.add(songIndexes.get(0x1017));
+		fiesta.add(songIndexes.get(0x1021));
+		fiesta.add(songIndexes.get(0x1022));
+		fiesta.add(songIndexes.get(0x1023));
+		fiesta.add(songIndexes.get(0x1024));
+		fiesta.add(songIndexes.get(0x1025));
+		fiesta.add(songIndexes.get(0x1026));
+		fiesta.add(songIndexes.get(0x1027));
+		fiesta.add(songIndexes.get(0x1028));
+		fiesta.add(songIndexes.get(0x1029));
+		fiesta.add(songIndexes.get(0x1030));
+		fiesta.add(songIndexes.get(0x1094));
+		fiesta.add(songIndexes.get(0x1095));
+		/* Fiesta EX */
+		final List<Song> fiestaEx = new ArrayList<>();
+		fiestaEx.add(songIndexes.get(0x1101));
+		fiestaEx.add(songIndexes.get(0x1102));
+		fiestaEx.add(songIndexes.get(0x1103));
+		fiestaEx.add(songIndexes.get(0x1104));
+		fiestaEx.add(songIndexes.get(0x1105));
+		fiestaEx.add(songIndexes.get(0x1106));
+		fiestaEx.add(songIndexes.get(0x1107));
+		fiestaEx.add(songIndexes.get(0x1123));
+		fiestaEx.add(songIndexes.get(0x1124));
+		fiestaEx.add(songIndexes.get(0x1126));
+		fiestaEx.add(songIndexes.get(0x1151));
+		fiestaEx.add(songIndexes.get(0x1152));
+		fiestaEx.add(songIndexes.get(0x1153));
+		fiestaEx.add(songIndexes.get(0x1154));
+		fiestaEx.add(songIndexes.get(0x1156));
+		fiestaEx.add(songIndexes.get(0x1160));
+		/* Fiesta 2 - Crossovers */
+		final List<Song> fiesta2Crossovers = new ArrayList<>();
+		fiesta2Crossovers.add(songIndexes.get(0x1201));
+		fiesta2Crossovers.add(songIndexes.get(0x1208));
+		fiesta2Crossovers.add(songIndexes.get(0x1209));
+		fiesta2Crossovers.add(songIndexes.get(0x1212));
+		fiesta2Crossovers.add(songIndexes.get(0x1218));
+		fiesta2Crossovers.add(songIndexes.get(0x1219));
+		fiesta2Crossovers.add(songIndexes.get(0x1221));
+		fiesta2Crossovers.add(songIndexes.get(0x1226));
+		fiesta2Crossovers.add(songIndexes.get(0x1230));
+		fiesta2Crossovers.add(songIndexes.get(0x1237));
+		fiesta2Crossovers.add(songIndexes.get(0x1241));
+		/* Fiesta 2 - Originals */
+		final List<Song> fiesta2Originals = new ArrayList<>();
+		fiesta2Originals.add(songIndexes.get(0x1305));
+		fiesta2Originals.add(songIndexes.get(0x1306));
+		fiesta2Originals.add(songIndexes.get(0x1307));
+		fiesta2Originals.add(songIndexes.get(0x1308));
+		fiesta2Originals.add(songIndexes.get(0x1309));
+		fiesta2Originals.add(songIndexes.get(0x1310));
+		fiesta2Originals.add(songIndexes.get(0x1311));
+		fiesta2Originals.add(songIndexes.get(0x1312));
+		fiesta2Originals.add(songIndexes.get(0x1313));
+		/* Prime */
+		//final List<Song> prime = new ArrayList<>();
+		songGroups.add(new Group("1st - 3rd", _1stTo3rd));
+		songGroups.add(new Group("SE - Extra", seToExtra));
+		songGroups.add(new Group("Rebirth - Prex3", rebirthToPrex3));
+		songGroups.add(new Group("Exceed - Zero", exceedToZero));
+		songGroups.add(new Group("NX - NX2", nxToNx2));
+		songGroups.add(new Group("NXA", nxa));
+		songGroups.add(new Group("Fiesta", fiesta));
+		songGroups.add(new Group("Fiesta EX", fiestaEx));
+		songGroups.add(new Group("Fiesta 2 - Crossovers", fiesta2Crossovers));
+		songGroups.add(new Group("Fiesta 2 - Originals", fiesta2Originals));
+		//songGroups.add(new Group("Prime", prime));
 	}
 	
 	/**
@@ -375,5 +561,12 @@ public class Songs
 				throw ex;
 			throw new ApiException(ex.toString(), Status.BAD_REQUEST.getStatusCode());
 		}
+	}
+	
+	@GET
+	@Path("groups")
+	public Response groups() throws Exception
+	{
+		return Response.ok(songGroups).build();
 	}
 }
