@@ -1,0 +1,30 @@
+doctype html
+html
+	head
+		title UCS
+		meta(charset='utf-8')
+		meta(http-equiv='X-UA-Compatible', content='IE=edge')
+		meta(name='viewport' content='width=device-width, initial-scale=1, user-scalable=no')
+		link(href='main.css',rel='stylesheet')
+	body(role='document')
+		.navbar.navbar-inverse.navbar-fixed-top
+			.container
+				.navbar-header
+					button.navbar-toggle(type='button',data-toggle='collapse',data-target='#ucs-collapse-menu')
+						span.icon-bar
+						span.icon-bar
+						span.icon-bar
+					a.navbar-brand(href='/') UCS Site
+				#ucs-collapse-menu.collapse.navbar-collapse
+					ul.nav.navbar-nav
+						li(class="#{ current.source == 'index' ? 'active' : '' }")
+							a(href='/') Home
+						li(class="#{ current.source == 'songs' ? 'active' : '' }")
+							a(href='/songs.html') Songs
+						li(class="#{ current.source == 'ucs' ? 'active' : '' }")
+							a(href='/ucs.html') UCS
+					ul.nav.navbar-nav.navbar-right
+						li: a.btn(href='/') Login
+						//-li: a(href='/') Logout
+						//-li: a(href='/') Profile
+		!= yield

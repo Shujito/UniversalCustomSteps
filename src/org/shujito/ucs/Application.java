@@ -20,7 +20,7 @@ public class Application
 		Server server = new Server(1337);
 		// file server
 		ResourceHandler resourceHandler = new ResourceHandler();
-		resourceHandler.setDirectoriesListed(true);
+		//resourceHandler.setDirectoriesListed(true);
 		resourceHandler.setWelcomeFiles(new String[] { "index.html" });
 		resourceHandler.setResourceBase("public");
 		// make a context for servlets

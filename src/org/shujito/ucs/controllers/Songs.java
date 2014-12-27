@@ -1,7 +1,9 @@
 package org.shujito.ucs.controllers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -20,9 +22,11 @@ public class Songs
 {
 	public static final String TAG = Songs.class.getSimpleName();
 	public static final List<Song> songs;
+	public static final Map<Integer, Song> songIndexes;
 	static
 	{
 		songs = new ArrayList<>();
+		songIndexes = new HashMap<Integer, Song>();
 		/* 1st - 3rd */
 		songs.add(new Song(0x204, "CS002", 130.5, 1920, "BanYa", "Final Audition"));
 		songs.add(new Song(0x205, "CS001", 195, 3805, "BanYa", "EXtravaganza"));
@@ -185,6 +189,157 @@ public class Songs
 		songs.add(new Song(0x1313, "CS144", 128, 19.5, "MAX", "U Got Me Rocking"));
 		/* Prime */
 		// XXX no ucs songlist released as of yet
+		/* id indexes */
+		songIndexes.put(0x204, songs.get(0));
+		songIndexes.put(0x205, songs.get(1));
+		songIndexes.put(0x301, songs.get(2));
+		songIndexes.put(0x302, songs.get(3));
+		songIndexes.put(0x303, songs.get(4));
+		songIndexes.put(0x306, songs.get(5));
+		songIndexes.put(0x307, songs.get(6));
+		songIndexes.put(0x308, songs.get(7));
+		songIndexes.put(0x309, songs.get(8));
+		songIndexes.put(0x310, songs.get(9));
+		songIndexes.put(0x311, songs.get(10));
+		songIndexes.put(0x401, songs.get(11));
+		songIndexes.put(0x403, songs.get(12));
+		songIndexes.put(0x404, songs.get(13));
+		songIndexes.put(0x405, songs.get(14));
+		songIndexes.put(0x410, songs.get(15));
+		songIndexes.put(0x501, songs.get(16));
+		songIndexes.put(0x502, songs.get(17));
+		songIndexes.put(0x503, songs.get(18));
+		songIndexes.put(0x504, songs.get(19));
+		songIndexes.put(0x505, songs.get(20));
+		songIndexes.put(0x911, songs.get(21));
+		songIndexes.put(0x922, songs.get(22));
+		songIndexes.put(0x701, songs.get(23));
+		songIndexes.put(0x702, songs.get(24));
+		songIndexes.put(0x703, songs.get(25));
+		songIndexes.put(0x704, songs.get(26));
+		songIndexes.put(0x705, songs.get(27));
+		songIndexes.put(0x706, songs.get(28));
+		songIndexes.put(0x707, songs.get(29));
+		songIndexes.put(0x708, songs.get(30));
+		songIndexes.put(0x709, songs.get(31));
+		songIndexes.put(0x710, songs.get(32));
+		songIndexes.put(0x711, songs.get(33));
+		songIndexes.put(0x712, songs.get(34));
+		songIndexes.put(0x713, songs.get(35));
+		songIndexes.put(0x714, songs.get(36));
+		songIndexes.put(0x715, songs.get(37));
+		songIndexes.put(0x716, songs.get(38));
+		songIndexes.put(0x717, songs.get(39));
+		songIndexes.put(0x718, songs.get(40));
+		songIndexes.put(0x735, songs.get(41));
+		songIndexes.put(0x736, songs.get(42));
+		songIndexes.put(0x802, songs.get(43));
+		songIndexes.put(0x807, songs.get(44));
+		songIndexes.put(0x811, songs.get(45));
+		songIndexes.put(0x820, songs.get(46));
+		songIndexes.put(0x826, songs.get(47));
+		songIndexes.put(0xA01, songs.get(48));
+		songIndexes.put(0xA02, songs.get(49));
+		songIndexes.put(0xA03, songs.get(50));
+		songIndexes.put(0xA04, songs.get(51));
+		songIndexes.put(0xA05, songs.get(52));
+		songIndexes.put(0xA06, songs.get(53));
+		songIndexes.put(0xA07, songs.get(54));
+		songIndexes.put(0xB16, songs.get(55));
+		songIndexes.put(0xB17, songs.get(56));
+		songIndexes.put(0xB18, songs.get(57));
+		songIndexes.put(0xB19, songs.get(58));
+		songIndexes.put(0xC01, songs.get(59));
+		songIndexes.put(0xC02, songs.get(60));
+		songIndexes.put(0xC03, songs.get(61));
+		songIndexes.put(0xC04, songs.get(62));
+		songIndexes.put(0xC05, songs.get(63));
+		songIndexes.put(0xC06, songs.get(64));
+		songIndexes.put(0xC1C04, songs.get(65));
+		songIndexes.put(0xD01, songs.get(66));
+		songIndexes.put(0xD02, songs.get(67));
+		songIndexes.put(0xD03, songs.get(68));
+		songIndexes.put(0xD14, songs.get(69));
+		songIndexes.put(0xD15, songs.get(70));
+		songIndexes.put(0xD16, songs.get(71));
+		songIndexes.put(0xD17, songs.get(72));
+		songIndexes.put(0xD18, songs.get(73));
+		songIndexes.put(0xD28, songs.get(74));
+		songIndexes.put(0xD30, songs.get(75));
+		songIndexes.put(0xE01, songs.get(76));
+		songIndexes.put(0xE02, songs.get(77));
+		songIndexes.put(0xE03, songs.get(78));
+		songIndexes.put(0xE04, songs.get(79));
+		songIndexes.put(0xE05, songs.get(80));
+		songIndexes.put(0xE12, songs.get(81));
+		songIndexes.put(0xE13, songs.get(82));
+		songIndexes.put(0xE13B, songs.get(83));
+		songIndexes.put(0xE23, songs.get(84));
+		songIndexes.put(0xE24, songs.get(85));
+		songIndexes.put(0xE25, songs.get(86));
+		songIndexes.put(0xF01, songs.get(87));
+		songIndexes.put(0xF02, songs.get(88));
+		songIndexes.put(0xF03, songs.get(89));
+		songIndexes.put(0xF22, songs.get(90));
+		songIndexes.put(0xF23, songs.get(91));
+		songIndexes.put(0xF24, songs.get(92));
+		songIndexes.put(0xF25, songs.get(93));
+		songIndexes.put(0xF26, songs.get(94));
+		songIndexes.put(0xF29, songs.get(95));
+		songIndexes.put(0x1001, songs.get(96));
+		songIndexes.put(0x1002, songs.get(97));
+		songIndexes.put(0x1003, songs.get(98));
+		songIndexes.put(0x1008, songs.get(99));
+		songIndexes.put(0x1013, songs.get(100));
+		songIndexes.put(0x1017, songs.get(101));
+		songIndexes.put(0x1021, songs.get(102));
+		songIndexes.put(0x1022, songs.get(103));
+		songIndexes.put(0x1023, songs.get(104));
+		songIndexes.put(0x1024, songs.get(105));
+		songIndexes.put(0x1025, songs.get(106));
+		songIndexes.put(0x1026, songs.get(107));
+		songIndexes.put(0x1027, songs.get(108));
+		songIndexes.put(0x1028, songs.get(109));
+		songIndexes.put(0x1029, songs.get(110));
+		songIndexes.put(0x1030, songs.get(111));
+		songIndexes.put(0x1094, songs.get(112));
+		songIndexes.put(0x1095, songs.get(113));
+		songIndexes.put(0x1101, songs.get(114));
+		songIndexes.put(0x1102, songs.get(115));
+		songIndexes.put(0x1103, songs.get(116));
+		songIndexes.put(0x1104, songs.get(117));
+		songIndexes.put(0x1105, songs.get(118));
+		songIndexes.put(0x1106, songs.get(119));
+		songIndexes.put(0x1107, songs.get(120));
+		songIndexes.put(0x1123, songs.get(121));
+		songIndexes.put(0x1124, songs.get(122));
+		songIndexes.put(0x1126, songs.get(123));
+		songIndexes.put(0x1151, songs.get(124));
+		songIndexes.put(0x1152, songs.get(125));
+		songIndexes.put(0x1153, songs.get(126));
+		songIndexes.put(0x1154, songs.get(127));
+		songIndexes.put(0x1156, songs.get(128));
+		songIndexes.put(0x1160, songs.get(129));
+		songIndexes.put(0x1201, songs.get(130));
+		songIndexes.put(0x1208, songs.get(131));
+		songIndexes.put(0x1209, songs.get(132));
+		songIndexes.put(0x1212, songs.get(133));
+		songIndexes.put(0x1218, songs.get(134));
+		songIndexes.put(0x1219, songs.get(135));
+		songIndexes.put(0x1221, songs.get(136));
+		songIndexes.put(0x1226, songs.get(137));
+		songIndexes.put(0x1230, songs.get(138));
+		songIndexes.put(0x1237, songs.get(139));
+		songIndexes.put(0x1241, songs.get(140));
+		songIndexes.put(0x1305, songs.get(141));
+		songIndexes.put(0x1306, songs.get(142));
+		songIndexes.put(0x1307, songs.get(143));
+		songIndexes.put(0x1308, songs.get(144));
+		songIndexes.put(0x1309, songs.get(145));
+		songIndexes.put(0x1310, songs.get(146));
+		songIndexes.put(0x1311, songs.get(147));
+		songIndexes.put(0x1312, songs.get(148));
+		songIndexes.put(0x1313, songs.get(149));
 	}
 	
 	/**
@@ -206,6 +361,19 @@ public class Songs
 	@Path("/{id}")
 	public Response get(@PathParam("id") String id)
 	{
-		throw new ApiException(null, Status.NOT_IMPLEMENTED.getStatusCode());
+		try
+		{
+			Integer intID = Integer.parseInt(id, 16);
+			Song song = songIndexes.get(intID);
+			if (song == null)
+				throw new ApiException("That song does not exist", Status.NOT_FOUND.getStatusCode());
+			return Response.ok(song).build();
+		}
+		catch (Exception ex)
+		{
+			if (ex instanceof ApiException)
+				throw ex;
+			throw new ApiException(ex.toString(), Status.BAD_REQUEST.getStatusCode());
+		}
 	}
 }
