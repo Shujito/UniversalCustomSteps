@@ -12,8 +12,8 @@ import java.util.UUID;
 
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -36,7 +36,6 @@ import redis.clients.jedis.Transaction;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
 
 @Path("/users")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -106,17 +105,24 @@ public class Users
 		return Response.ok(accessToken).build();
 	}
 	
-	@POST
+	@DELETE
 	@Path("/logout")
-	public Response logout(@HeaderParam("access-token") String accessToken)
+	public Response logout(@BeanParam User user) throws Exception
 	{
-		return Response.ok().build();
+		user.continueOrThrow();
+		Jedis jedis = JedisWrapper.open();
+		Transaction transaction = jedis.multi();
+		transaction.srem("sessions:" + user.id, user.accessToken);
+		transaction.del("session:" + user.accessToken);
+		transaction.exec();
+		return Response.accepted().build();
 	}
 	
 	@GET
 	@Path("/test_auth")
 	public Response beanAuth(@BeanParam User user) throws Exception
 	{
+		user.continueOrThrow();
 		Map<String, Object> messageMap = new HashMap<>();
 		messageMap.put("success", true);
 		messageMap.put("message", "Hello, " + user.displayName + "!");
@@ -158,7 +164,7 @@ public class Users
 	
 	private PasswordSalt saltAndHash(User user, String base64SaltBytes) throws Exception
 	{
-		byte[] saltBytes = Base64.decode(base64SaltBytes);
+		byte[] saltBytes = Crypto.base64decode(base64SaltBytes);
 		return this.saltAndHash(user, saltBytes);
 	}
 	
@@ -184,8 +190,8 @@ public class Users
 			sha256passwordBytes = Crypto.sha256(bytesContainer);
 		}
 		PasswordSalt passwordSalt = new PasswordSalt();
-		passwordSalt.password = Base64.encode(sha256passwordBytes);
-		passwordSalt.salt = Base64.encode(saltBytes);
+		passwordSalt.password = Crypto.base64encode(sha256passwordBytes);
+		passwordSalt.salt = Crypto.base64encode(saltBytes);
 		return passwordSalt;
 	}
 	
@@ -250,8 +256,9 @@ public class Users
 	
 	private void saveAccessToken(Jedis jedis, User user, AccessToken accessToken) throws Exception
 	{
+		// TODO: strengthen
 		byte[] sha256tokenBytes = Crypto.sha256(accessToken.accessToken);
-		String base64sha256token = Base64.encode(sha256tokenBytes);
+		String base64sha256token = Crypto.base64encode(sha256tokenBytes);
 		Transaction transaction = jedis.multi();
 		// session data
 		transaction.hset("session:" + base64sha256token, AccessToken.EXPIRES, accessToken.expires.toString());
@@ -259,7 +266,7 @@ public class Users
 		// expire
 		transaction.pexpireAt("session:" + base64sha256token, accessToken.expires);
 		// add to user's sessions
-		transaction.rpush("sessions:" + user.id, base64sha256token);
+		transaction.sadd("sessions:" + user.id, base64sha256token);
 		transaction.exec();
 	}
 	

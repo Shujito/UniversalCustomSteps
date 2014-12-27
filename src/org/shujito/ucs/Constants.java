@@ -20,5 +20,6 @@ public class Constants
 		public static final String INVALID_CREDENTIALS = "Invalid credentials";
 		// accessing
 		public static final String ACCESS_DENIED = "Access denied";
+		public static final String MALFORMED_ACCESS_TOKEN = "Malformed access token";
 	}
 }

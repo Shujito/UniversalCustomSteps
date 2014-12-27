@@ -46,6 +46,7 @@ public class User
 	public static final String USERNAME = "username";
 	public static final String PASSWORD = "password";
 	public static final String EMAIL = "email";
+	public static final String ACCESS_TOKEN = "access_token";
 	public static final String CREATED = "created";
 	@SerializedName(value = ID)
 	public String id;
@@ -57,34 +58,59 @@ public class User
 	public String password;
 	@SerializedName(value = EMAIL)
 	public String email;
+	@SerializedName(value = ACCESS_TOKEN)
+	public String accessToken;
 	@SerializedName(value = CREATED)
 	public Long created;
+	private Exception exception;
 	
-	public User()
-	{
-	}
-	
-	public User(@HeaderParam("access-token") String accessToken, @HeaderParam("user-agent") String userAgent) throws Exception
+	// privates
+	public User(@HeaderParam("access-token") String accessToken, @HeaderParam("user-agent") String userAgent)
 	{
 		if (accessToken == null)
-			throw new ApiException(Constants.Strings.ACCESS_DENIED, Status.FORBIDDEN.getStatusCode());
-		byte[] accessTokenBytes = Base64.decode(accessToken);
+		{
+			this.exception = new ApiException(Constants.Strings.ACCESS_DENIED, Status.FORBIDDEN.getStatusCode());
+			return;
+		}
+		if (accessToken.length() != 44)
+		{
+			this.exception = new ApiException(Constants.Strings.MALFORMED_ACCESS_TOKEN, Status.FORBIDDEN.getStatusCode());
+			return;
+		}
+		byte[] accessTokenBytes = Crypto.base64decode(accessToken);
+		if (accessTokenBytes == null)
+		{
+			this.exception = new ApiException(Constants.Strings.MALFORMED_ACCESS_TOKEN, Status.BAD_REQUEST.getStatusCode());
+			return;
+		}
 		byte[] sha256accessTokenBytes = Crypto.sha256(accessTokenBytes);
 		String sha256accessTokenString = Base64.encode(sha256accessTokenBytes);
 		Jedis jedis = JedisWrapper.open();
 		this.id = jedis.hget("session:" + sha256accessTokenString, User.ID);
 		if (this.id == null)
-			throw new ApiException(Constants.Strings.ACCESS_DENIED, Status.FORBIDDEN.getStatusCode());
+		{
+			this.exception = new ApiException(Constants.Strings.ACCESS_DENIED, Status.FORBIDDEN.getStatusCode());
+			return;
+		}
 		Gson gson = GsonWrapper.getInstance().getGson();
 		Map<String, String> userMap = jedis.hgetAll("user:" + this.id);
 		String userMapJson = gson.toJson(userMap);
 		User user = gson.fromJson(userMapJson, User.class);
-		this.id = user.id;
+		//this.id = user.id;
 		this.displayName = user.displayName;
 		this.username = user.username;
 		this.password = user.password;
 		this.email = user.email;
 		this.created = user.created;
+		this.accessToken = sha256accessTokenString;
+	}
+	
+	public void continueOrThrow() throws Exception
+	{
+		if (this.exception != null)
+		{
+			throw this.exception;
+		}
 	}
 	
 	public String validate(Validation require)
