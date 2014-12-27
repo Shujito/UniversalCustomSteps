@@ -12,15 +12,25 @@ public class Song
 	public static final String ARTIST = "artist";
 	public static final String NAME = "name";
 	@SerializedName(value = ID)
-	public int id;
+	public final int id;
 	@SerializedName(value = UCS)
-	public String ucs;
+	public final String ucs;
 	@SerializedName(value = BPM)
-	public double bpm;
+	public final double bpm;
 	@SerializedName(value = DELAY)
-	public double delay;
+	public final double delay;
 	@SerializedName(value = ARTIST)
-	public String artist;
+	public final String artist;
 	@SerializedName(value = NAME)
-	public String name;
+	public final String name;
+	
+	public Song(int id, String ucs, double bpm, double delay, String artist, String name)
+	{
+		this.id = id;
+		this.ucs = ucs;
+		this.bpm = bpm;
+		this.delay = delay;
+		this.artist = artist;
+		this.name = name;
+	}
 }
