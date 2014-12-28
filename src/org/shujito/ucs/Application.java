@@ -5,8 +5,10 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.jersey.server.ServerProperties;
 import org.glassfish.jersey.servlet.ServletContainer;
 
@@ -31,6 +33,12 @@ public class Application
 		ServletHolder servletHolder = serverContextHandler.addServlet(ServletContainer.class, "/*");
 		servletHolder.setInitOrder(0);
 		servletHolder.setInitParameter(ServerProperties.PROVIDER_PACKAGES, "org.shujito.ucs.controllers");
+		// CORS
+		FilterHolder filterHolder = new FilterHolder();
+		filterHolder.setInitParameter("allowedOrigins", "http://0.0.0.0:9000,http://localhost:9000,http://127.0.0.1:9000");
+		CrossOriginFilter corsFilter = new CrossOriginFilter();
+		filterHolder.setFilter(corsFilter);
+		serverContextHandler.addFilter(filterHolder, "/*", null);
 		// put both handlers on a list so both can be used
 		HandlerList handlerList = new HandlerList();
 		handlerList.setHandlers(new Handler[] {

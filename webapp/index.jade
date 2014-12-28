@@ -8,6 +8,10 @@ html
 		link(href='main.css',rel='stylesheet')
 		script#songs-template(type='text-html')
 			include ./_imports/songs.jade
+		script#404-template(type='text-html')
+			include ./_imports/404.jade
+		script#ucs-template(type='text-html')
+			include ./_imports/ucs.jade
 	body(role='document')
 		.navbar.navbar-inverse.navbar-fixed-top
 			.container
@@ -20,11 +24,12 @@ html
 				#ucs-collapse-menu.collapse.navbar-collapse
 					ul.nav.navbar-nav
 						li(class="#{ current.source == 'index' ? 'active' : '' }")
-							a(href='/') Home
+							a(href='/index') Home
 						li(class="#{ current.source == 'songs' ? 'active' : '' }")
 							a(href='/songs') Songs
 						li(class="#{ current.source == 'ucs' ? 'active' : '' }")
 							a(href='/ucs') UCS
 					ul.nav.navbar-nav.navbar-right
 						li: a.btn(href='/') Login
+		#body-content
 		script(src='app.js')

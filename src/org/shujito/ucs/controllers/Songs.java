@@ -17,6 +17,11 @@ import org.shujito.ucs.ApiException;
 import org.shujito.ucs.models.Group;
 import org.shujito.ucs.models.Song;
 
+/**
+ * <p>UCS Enabled songs.</p>
+ * <p>Leaving the lists hardcoded there, since it doesn't need to be in the database.</p>
+ * @author shujito
+ */
 @Path("/songs")
 @Produces(MediaType.APPLICATION_JSON)
 public class Songs
