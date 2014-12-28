@@ -1,0 +1,14 @@
+.container
+	.row
+		.col-xs-12
+			.panel.panel-default.size-480.center
+				.panel-heading
+					h2 Log in
+				.panel-body
+					.form-group
+						input.form-control(maxlength='100',type='text',name='username',placeholder='username')
+					.form-group
+						input.form-control(maxlength='100',type='password',name='password',placeholder='password')
+					button.btn.btn-default Log in
+				.panel-footer
+					p: a(href='/register') Register new account

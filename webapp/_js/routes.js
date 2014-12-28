@@ -1,26 +1,42 @@
-function route(source) {
-	var contents = $(source).text();
-	$('#body-content')[0].innerHTML = contents;
+function routeTemplate(source,init) {
+	var newContents = $(source).text();
+	var bodyContent = $('#body-content');
+	if (init) {
+		bodyContent[0].innerHTML = newContents;
+	} else {
+		bodyContent.addClass('hide');
+		setTimeout(function(){
+			bodyContent.removeClass('hide');
+			bodyContent[0].innerHTML = newContents;
+		},300);
+	}
 }
 
-page('/', function index() {
-	route('#songs-template');
+page('*', function index(ctx,next) {
+	//console.log('init:'+!!ctx.init);
+	$('li.active').removeClass('active');
+	$('[href="'+ ctx.path +'"]').parent().addClass('active');
+	next();
 });
 
-page('/index', function index() {
-	route('#songs-template');
+page('/', function index(ctx) {
+	routeTemplate('#songs-template',ctx.init);
 });
 
-page('/songs', function index() {
-	route('#songs-template');
+page('/songs', function songs(ctx) {
+	routeTemplate('#songs-template',ctx.init);
 });
 
-page('/ucs', function index() {
-	route('#ucs-template');
+page('/ucs', function ucs(ctx) {
+	routeTemplate('#ucs-template',ctx.init);
 });
 
-page('*',function nothing() {
-	route('#404-template');
+page('/login', function login(ctx) {
+	routeTemplate('#login-template',ctx.init);
+});
+
+page('*',function nothing(ctx) {
+	routeTemplate('#404-template',ctx.init);
 });
 
 page();
