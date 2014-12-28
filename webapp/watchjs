@@ -1,0 +1,1 @@
+watchify app.js -o public/app.js -v

@@ -1,13 +1,13 @@
 function routeTemplate(source,init) {
-	var newContents = $(source).text();
-	var bodyContent = $('#body-content');
+	var newHtml = $(source).text();
+	var content = $('#content');
 	if (init) {
-		bodyContent[0].innerHTML = newContents;
+		content[0].innerHTML = newHtml;
 	} else {
-		bodyContent.addClass('hide');
+		content.addClass('transition');
 		setTimeout(function(){
-			bodyContent.removeClass('hide');
-			bodyContent[0].innerHTML = newContents;
+			content.removeClass('transition');
+			content[0].innerHTML = newHtml;
 		},300);
 	}
 }
@@ -27,9 +27,15 @@ page('/songs', function songs(ctx) {
 	routeTemplate('#songs-template',ctx.init);
 });
 
+page('/songs/:id', function songs(ctx) {
+	routeTemplate('#song_id-template',ctx.init);
+});
+
+/*
 page('/ucs', function ucs(ctx) {
 	routeTemplate('#ucs-template',ctx.init);
 });
+//*/
 
 page('/login', function login(ctx) {
 	routeTemplate('#login-template',ctx.init);

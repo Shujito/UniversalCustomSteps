@@ -1,4 +1,4 @@
-@import 'node_modules/bootstrap/less/bootstrap';
+@import '../node_modules/bootstrap/less/bootstrap';
 
 body {
 	padding-top: 70px
@@ -21,4 +21,15 @@ body {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+}
+
+#content {
+	opacity: 1;
+	margin-top: 0px;
+	transition: opacity 200ms, margin-top 300ms;
+}
+
+#content.transition {
+	margin-top: -10px;
+	opacity: 0;
 }

@@ -5,13 +5,13 @@ html
 		meta(charset='utf-8')
 		meta(http-equiv='X-UA-Compatible', content='IE=edge')
 		meta(name='viewport' content='width=device-width, initial-scale=1, user-scalable=no')
-		link(href='main.css',rel='stylesheet')
+		link(href='/main.css',rel='stylesheet')
 		script#songs-template(type='text-html')
 			include ./_imports/songs.jade
 		script#404-template(type='text-html')
 			include ./_imports/404.jade
-		script#ucs-template(type='text-html')
-			include ./_imports/ucs.jade
+		script#song_id-template(type='text-html')
+			include ./_imports/song_id.jade
 		script#login-template(type='text-html')
 			include ./_imports/login.jade
 	body(role='document')
@@ -30,5 +30,5 @@ html
 						li: a(href='/ucs') UCS
 					ul.nav.navbar-nav.navbar-right
 						li: a.btn(href='/login') Login
-		#body-content
-		script(src='app.js')
+		#content
+		script(src='/app.js')
