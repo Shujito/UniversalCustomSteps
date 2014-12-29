@@ -22,9 +22,14 @@ public class Application
 		Server server = new Server(1337);
 		// file server
 		ResourceHandler resourceHandler = new ResourceHandler();
-		//resourceHandler.setDirectoriesListed(true);
-		resourceHandler.setWelcomeFiles(new String[] { "index.html" });
+		resourceHandler.setDirectoriesListed(true);
+		//resourceHandler.setWelcomeFiles(new String[] {});
 		resourceHandler.setResourceBase("public");
+		/*
+		File file = new File("public");
+		Resource resource = Resource.newResource(file);
+		resourceHandler.setBaseResource(resource);
+		//*/
 		// make a context for servlets
 		ServletContextHandler serverContextHandler = new ServletContextHandler(server, "/api", ServletContextHandler.SESSIONS);
 		// api errors
@@ -34,9 +39,9 @@ public class Application
 		servletHolder.setInitOrder(0);
 		servletHolder.setInitParameter(ServerProperties.PROVIDER_PACKAGES, "org.shujito.ucs.controllers");
 		// CORS
+		CrossOriginFilter corsFilter = new CrossOriginFilter();
 		FilterHolder filterHolder = new FilterHolder();
 		filterHolder.setInitParameter("allowedOrigins", "http://0.0.0.0:9000,http://localhost:9000,http://127.0.0.1:9000");
-		CrossOriginFilter corsFilter = new CrossOriginFilter();
 		filterHolder.setFilter(corsFilter);
 		serverContextHandler.addFilter(filterHolder, "/*", null);
 		// put both handlers on a list so both can be used
