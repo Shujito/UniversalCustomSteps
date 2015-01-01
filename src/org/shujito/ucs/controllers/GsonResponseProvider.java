@@ -55,7 +55,9 @@ public class GsonResponseProvider
 		Annotation[] annotations,
 		MediaType mediaType,
 		MultivaluedMap<String, String> httpHeaders,
-		InputStream entityStream) throws IOException,
+		InputStream entityStream)
+		throws
+		IOException,
 		WebApplicationException
 	{
 		InputStreamReader streamReader = new InputStreamReader(entityStream, UTF_8);
@@ -70,7 +72,14 @@ public class GsonResponseProvider
 			{
 				jsonType = genericType;
 			}
-			return this.gson.fromJson(streamReader, jsonType);
+			try
+			{
+				return this.gson.fromJson(streamReader, jsonType);
+			}
+			catch (Exception ex)
+			{
+				return null;
+			}
 		}
 		finally
 		{
@@ -105,7 +114,9 @@ public class GsonResponseProvider
 		Annotation[] annotations,
 		MediaType mediaType,
 		MultivaluedMap<String, Object> httpHeaders,
-		OutputStream entityStream) throws IOException,
+		OutputStream entityStream)
+		throws
+		IOException,
 		WebApplicationException
 	{
 		OutputStreamWriter writer = new OutputStreamWriter(entityStream, UTF_8);

@@ -8,4 +8,7 @@ require('./js/libs/lawnchair-0.6.1.js');
 // own stuff
 //require('./js/songs.js');
 require('./js/routes.js');
+require('./js/utils.js');
+require('./js/login.js');
+require('./js/register.js');
 require('./js/storage.js');

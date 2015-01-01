@@ -23,13 +23,8 @@ public class Application
 		// file server
 		ResourceHandler resourceHandler = new ResourceHandler();
 		resourceHandler.setDirectoriesListed(true);
-		//resourceHandler.setWelcomeFiles(new String[] {});
+		resourceHandler.setWelcomeFiles(new String[] { "index.html" });
 		resourceHandler.setResourceBase("public");
-		/*
-		File file = new File("public");
-		Resource resource = Resource.newResource(file);
-		resourceHandler.setBaseResource(resource);
-		//*/
 		// make a context for servlets
 		ServletContextHandler serverContextHandler = new ServletContextHandler(server, "/api", ServletContextHandler.SESSIONS);
 		// api errors

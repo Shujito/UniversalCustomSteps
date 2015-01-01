@@ -1,13 +1,19 @@
-function routeTemplate(source,init) {
+function routeTemplate(source,init,fn) {
 	var newHtml = $(source).text();
 	var content = $('#content');
 	if (init) {
-		content[0].innerHTML = newHtml;
+		content.html(newHtml);
+		if (typeof fn == 'function') {
+			fn();
+		}
 	} else {
 		content.addClass('transition');
 		setTimeout(function(){
 			content.removeClass('transition');
-			content[0].innerHTML = newHtml;
+			content.html(newHtml);
+			if (typeof fn == 'function') {
+				fn();
+			}
 		},300);
 	}
 }
@@ -38,11 +44,21 @@ page('/ucs', function ucs(ctx) {
 //*/
 
 page('/login', function login(ctx) {
-	routeTemplate('#login-template',ctx.init);
+	routeTemplate('#login-template',ctx.init,function(){
+		window.Login();
+	});
 });
 
-page('*',function nothing(ctx) {
-	routeTemplate('#404-template',ctx.init);
+page('/register', function register(ctx) {
+	routeTemplate('#register-template',ctx.init,function(){
+		window.Register();
+	});
 });
 
-page();
+page('*', function nothing(ctx) {
+	routeTemplate('#404-template',ctx.init,function(){
+		console.log('noh!')
+	});
+});
+
+$(function(){ page(); });

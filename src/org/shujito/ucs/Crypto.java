@@ -10,16 +10,26 @@ public class Crypto
 {
 	public static final String TAG = Crypto.class.getSimpleName();
 	
-	public static byte[] sha256(byte[] bytes)
+	public static byte[] digest(byte[] bytes, String algorithm)
 	{
 		try
 		{
-			return MessageDigest.getInstance("SHA-256").digest(bytes);
+			return MessageDigest.getInstance(algorithm).digest(bytes);
 		}
-		catch (NoSuchAlgorithmException e)
+		catch (NoSuchAlgorithmException ex)
 		{
 			return null;
 		}
+	}
+	
+	public static byte[] sha256(byte[] bytes)
+	{
+		return digest(bytes, "SHA-256");
+	}
+	
+	public static byte[] sha512(byte[] bytes)
+	{
+		return digest(bytes, "SHA-512");
 	}
 	
 	public static byte[] base64decode(String base64String)
