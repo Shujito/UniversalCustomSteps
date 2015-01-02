@@ -31,7 +31,11 @@ window.Login = function Login(data) {
 				alert(err.message);
 				return;
 			}
-			console.log(data);
+			// save it!
+			lawn.save({
+				key:'login-data',
+				value: data
+			});
 			page('/');
 		});
 	});

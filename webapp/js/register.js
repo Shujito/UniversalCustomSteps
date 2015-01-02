@@ -3,7 +3,7 @@ window.Register = function Login() {
 		var button = $(this);
 		ev.preventDefault();
 		var stuff = Utils.serializeInputs('#form-login');
-		console.log(stuff);
+		//console.log(stuff);
 		$('input').parent().removeClass('has-error');
 		var inputUsername = $('input[name=username]');
 		var inputEmail = $('input[name=email]');
@@ -26,10 +26,15 @@ window.Register = function Login() {
 			alert('Fill in your login information!');
 			return;
 		}
+		if (!rfc822validate(stuff.email)) {
+			inputEmail.parent().addClass('has-error');
+			alert('Invalid email address');
+			return;
+		}
 		if (stuff.password !== stuff.confirm) {
 			inputPassword.parent().addClass('has-error');
 			inputConfirm.parent().addClass('has-error');
-			alert('passwords do not match!');
+			alert('Passwords do not match!');
 			return;
 		}
 		button.button('loading');
@@ -40,6 +45,9 @@ window.Register = function Login() {
 				alert(err.message);
 				return;
 			}
+			//console.log('login:',data);
+			page('/login');
+			alert('you can login now!');
 		});
 	});
 }

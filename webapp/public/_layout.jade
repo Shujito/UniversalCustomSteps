@@ -16,6 +16,8 @@ html
 			include ./_imports/login.jade
 		script#register-template(type='text/x-template')
 			include ./_imports/register.jade
+		script#logout-template(type='text/x-template')
+			include ./_imports/logout.jade
 	body(role='document')
 		.navbar.navbar-inverse.navbar-fixed-top
 			.container
@@ -27,11 +29,12 @@ html
 					a.navbar-brand(href='/') UCS Site
 				#ucs-collapse-menu.collapse.navbar-collapse
 					ul.nav.navbar-nav
-						li: a(href='/') Home
-						li: a(href='/songs') Songs
-						li: a(href='/ucs') UCS
+						li#menu-home:  a(href='/') Home
+						li#menu-songs: a(href='/songs') Songs
+						li#menu-ucs:   a(href='/ucs') UCS
 					ul.nav.navbar-nav.navbar-right
-						li: a.btn(href='/login') Login
+						li#menu-login: a.btn(href='/login') Login
+						li#menu-logout: a.btn(href='/logout') Logout
 		#content
 		include ./_imports/overlays.jade
 		script(src='/app.js')

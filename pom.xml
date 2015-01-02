@@ -45,5 +45,10 @@
 			<artifactId>jedis</artifactId>
 			<version>LATEST</version>
 		</dependency>
+		<dependency>
+			<groupId>commons-validator</groupId>
+			<artifactId>commons-validator</artifactId>
+			<version>LATEST</version>
+		</dependency>
 	</dependencies>
 </project>

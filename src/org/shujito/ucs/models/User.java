@@ -1,10 +1,12 @@
 package org.shujito.ucs.models;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.validator.routines.EmailValidator;
 import org.shujito.ucs.ApiException;
 import org.shujito.ucs.Constants;
 import org.shujito.ucs.Crypto;
@@ -132,6 +134,18 @@ public class User
 		if (require.password && this.password.length() < 10)
 		{
 			return Constants.Strings.PASSWORD_IS_TOO_SHORT;
+		}
+		// formats
+		if (require.username)
+		{
+			if (!Pattern.matches("[a-zA-Z]{2,24}", this.username))
+			{
+				return Constants.Strings.USERNAME_CAN_ONLY_CONTAIN_BETWEEN_2_AND_24_LETTERS;
+			}
+		}
+		if (require.email && !EmailValidator.getInstance().isValid(this.email))
+		{
+			return Constants.Strings.INVALID_EMAIL_ADDRESS;
 		}
 		return null;
 	}
