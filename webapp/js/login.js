@@ -1,4 +1,4 @@
-window.Login = function Login(data) {
+window.Login = function Login() {
 	$('#btn-login').on('click', function(ev){
 		var button = $(this);
 		ev.preventDefault();

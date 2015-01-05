@@ -19,8 +19,10 @@ function routeTemplate(source,init,fn) {
 }
 
 function header(ctx,next) {
-	lawn.get(' login-data', function (data) {
+	lawn.get('login-data', function (data) {
+		
 		//console.log(data.value);
+		/*
 		if (data && data.value && data.value['access_token']) {
 			$('#menu-login').addClass('hidden');
 			$('#menu-logout').removeClass('hidden');
@@ -28,18 +30,20 @@ function header(ctx,next) {
 			$('#menu-login').removeClass('hidden');
 			$('#menu-logout').addClass('hidden');
 		}
+		//*/
 	});
 	next();
 }
 
 function index(ctx,next) {
-	console.log('init:'+!!ctx.init);
+	//console.log('init:'+!!ctx.init);
 	$('li.active').removeClass('active');
 	$('[href="'+ ctx.path +'"]').parent().addClass('active');
+	//$('#ucs-collapse-menu').collapse('hide');
 	next();
 }
 
-page('*', header, index);
+page('*', index);
 
 page('/', function index(ctx) {
 	routeTemplate('#songs-template',ctx.init);
@@ -59,33 +63,39 @@ page('/song/:id', function songs(ctx,next) {
 page('/ucs', function ucs(ctx) {
 	routeTemplate('#ucs-template',ctx.init);
 });
-
-function isLogged(ctx,next) {
-	lawn.get('login-data', function (data) {
-		if (!!data) {
-			next();
-		} else {
-			page('/');
-		}
-	});
-}
 //*/
 
-page('/login', function login(ctx) {
+function isLogged(actuallyIs) {
+	actuallyIs = !!actuallyIs;
+	return function isLogged(ctx,next) {
+		lawn.get('login-data', function (data) {
+			console.log('login-data:',data);
+			if ((actuallyIs && data !== undefined) || data === undefined ) {
+				console.log('?');
+				next();
+			} else {
+				console.log('to root');
+				page('/');
+			}
+		})
+	}
+}
+
+page('/login', isLogged(true), function login(ctx) {
 	routeTemplate('#login-template', ctx.init, function () {
 		window.Login();
 	});
 });
 
-page('/register', function register(ctx) {
+page('/register', isLogged(true), function register(ctx) {
 	routeTemplate('#register-template', ctx.init, function () {
 		window.Register();
 	});
 });
 
-page('/logout', function logout(ctx) {
+page('/logout', isLogged(false), function logout(ctx) {
 	routeTemplate('#logout-template', ctx.init, function () {
-		window.Register();
+		window.Logout();
 	});
 });
 
@@ -95,4 +105,10 @@ page('*', function nothing(ctx) {
 	});
 });
 
-$(function () { page() });
+$(function () {
+	page();
+	$('li a').on('click',function(e){
+		if (window.innerWidth < 768)
+			$('#ucs-collapse-menu').collapse('hide');
+	});
+});

@@ -1,5 +1,13 @@
 package org.shujito.ucs;
 
+import java.io.File;
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jetty.rewrite.handler.RewriteHandler;
+import org.eclipse.jetty.rewrite.handler.Rule;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.DefaultHandler;
@@ -21,10 +29,24 @@ public class Application
 		// create jetty server
 		Server server = new Server(1337);
 		// file server
-		ResourceHandler resourceHandler = new ResourceHandler();
+		final ResourceHandler resourceHandler = new ResourceHandler();
 		resourceHandler.setDirectoriesListed(true);
 		resourceHandler.setWelcomeFiles(new String[] { "index.html" });
 		resourceHandler.setResourceBase("public");
+		// huh
+		RewriteHandler rewriteHandler = new RewriteHandler();
+		rewriteHandler.addRule(new Rule() {
+			@Override
+			public String matchAndApply(String target, HttpServletRequest request, HttpServletResponse response) throws IOException
+			{
+				if (target.startsWith("/api"))
+					return null;
+				File resource = new File("public" + target);
+				if (resource.exists())
+					return null;
+				return "/";
+			}
+		});
 		// make a context for servlets
 		ServletContextHandler serverContextHandler = new ServletContextHandler(server, "/api", ServletContextHandler.SESSIONS);
 		// api errors
@@ -36,12 +58,14 @@ public class Application
 		// CORS
 		CrossOriginFilter corsFilter = new CrossOriginFilter();
 		FilterHolder filterHolder = new FilterHolder();
-		filterHolder.setInitParameter("allowedOrigins", "http://0.0.0.0:9000,http://localhost:9000,http://127.0.0.1:9000");
+		//filterHolder.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "http://0.0.0.0:9000,http://localhost:9000,http://127.0.0.1:9000");
+		filterHolder.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "*");
 		filterHolder.setFilter(corsFilter);
 		serverContextHandler.addFilter(filterHolder, "/*", null);
-		// put both handlers on a list so both can be used
+		// put handlers on a list so all can be used
 		HandlerList handlerList = new HandlerList();
 		handlerList.setHandlers(new Handler[] {
+			rewriteHandler,
 			resourceHandler,
 			serverContextHandler,
 			new DefaultHandler()

@@ -28,14 +28,19 @@ window.Utils.ajax = function(method,url,data,callback) {
 	} else {
 		options.data = data;
 	}
+	//options.headers = { 'access-token':'' };
 	options.success = function(e) {
+		console.log('::::success',e);
 		if(callback) {
 			callback(null,e);
 		}
 	};
 	options.error = function(e) {
-		if(callback) {
+		console.log('::::error',e);
+		if(callback && (e.responseJSON || e.response)) {
 			callback(e.responseJSON || e.response);
+		} else {
+			callback({ message:'cors' });
 		}
 	};
 	$.ajax(options);
