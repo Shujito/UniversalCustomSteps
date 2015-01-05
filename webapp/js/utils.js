@@ -10,7 +10,7 @@ window.Utils.serializeInputs = function(selector) {
 	return json;
 };
 
-window.Utils.ajax = function(method,url,data,callback) {
+window.Utils.ajax = function(method,url,headers,data,callback) {
 	if (location.host === 'localhost:9000') {
 		var newHost = 'http://0.0.0.0:1337';
 		if (url[0] === '/')
@@ -28,15 +28,14 @@ window.Utils.ajax = function(method,url,data,callback) {
 	} else {
 		options.data = data;
 	}
-	//options.headers = { 'access-token':'' };
+	//options.crossDomain = true;
+	options.headers = headers;
 	options.success = function(e) {
-		console.log('::::success',e);
 		if(callback) {
 			callback(null,e);
 		}
 	};
 	options.error = function(e) {
-		console.log('::::error',e);
 		if(callback && (e.responseJSON || e.response)) {
 			callback(e.responseJSON || e.response);
 		} else {
@@ -46,18 +45,18 @@ window.Utils.ajax = function(method,url,data,callback) {
 	$.ajax(options);
 };
 
-window.Utils.get = function(url,callback) {
-	window.Utils.ajax('GET',url,null,callback);
+window.Utils.get = function(url,headers,callback) {
+	window.Utils.ajax('GET',url,headers,null,callback);
 };
 
-window.Utils.post = function(url,data,callback) {
-	window.Utils.ajax('POST',url,data,callback);
+window.Utils.post = function(url,headers,data,callback) {
+	window.Utils.ajax('POST',url,headers,data,callback);
 };
 
-window.Utils.put = function(url,data,callback) {
-	window.Utils.ajax('PUT',url,data,callback);
+window.Utils.put = function(url,headers,data,callback) {
+	window.Utils.ajax('PUT',url,headers,data,callback);
 };
 
-window.Utils.delete = function(url,callback) {
-	window.Utils.ajax('DELETE',url,null,callback);
+window.Utils.delete = function(url,headers,callback) {
+	window.Utils.ajax('DELETE',url,headers,null,callback);
 };

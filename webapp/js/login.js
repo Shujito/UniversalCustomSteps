@@ -16,15 +16,15 @@ window.Login = function Login() {
 			return;
 		}
 		button.button('loading');
-		Utils.post('/api/users/login', stuff, function(err,data) {
+		Utils.post('/api/users/login', null, stuff, function(err,data) {
 			button.button('reset');
 			if (err) {
 				console.log(err);
-				if (err.status == 404) {
+				if (err.status === 404) {
 					// username is bad
 					inputUsername.parent().addClass('has-error');
 				}
-				if (err.status == 406) {
+				if (err.status === 406) {
 					// password is bad
 					inputPassword.parent().addClass('has-error');
 				}

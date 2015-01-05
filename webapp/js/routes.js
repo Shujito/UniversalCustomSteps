@@ -20,9 +20,8 @@ function routeTemplate(source,init,fn) {
 
 function header(ctx,next) {
 	lawn.get('login-data', function (data) {
-		
-		//console.log(data.value);
-		/*
+		//console.log(data);
+		//*
 		if (data && data.value && data.value['access_token']) {
 			$('#menu-login').addClass('hidden');
 			$('#menu-logout').removeClass('hidden');
@@ -43,7 +42,7 @@ function index(ctx,next) {
 	next();
 }
 
-page('*', index);
+page('*', header, index);
 
 page('/', function index(ctx) {
 	routeTemplate('#songs-template',ctx.init);
@@ -70,11 +69,12 @@ function isLogged(actuallyIs) {
 	return function isLogged(ctx,next) {
 		lawn.get('login-data', function (data) {
 			console.log('login-data:',data);
-			if ((actuallyIs && data !== undefined) || data === undefined ) {
-				console.log('?');
+			var has = data && data.value && data.value['access_token'];
+			if ((actuallyIs && !has) || has ) {
+				console.log('logged');
 				next();
 			} else {
-				console.log('to root');
+				console.log('not logged');
 				page('/');
 			}
 		})
