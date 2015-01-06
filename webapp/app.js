@@ -10,6 +10,7 @@ require('./js/libs/lawnchair-0.6.1.js');
 //require('./js/songs.js');
 require('./js/login.js');
 require('./js/logout.js');
+require('./js/me.js');
 require('./js/register.js');
 require('./js/routes.js');
 require('./js/storage.js');

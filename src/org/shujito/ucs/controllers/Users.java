@@ -72,6 +72,15 @@ public class Users
 		return Response.ok(user).build();
 	}
 	
+	@GET
+	@Path("/me")
+	public Response me(@BeanParam User user) throws Exception
+	{
+		user.continueOrThrow();
+		user.accessToken = null;
+		return Response.ok(user).build();
+	}
+	
 	@POST
 	@Path("/register")
 	public Response register(User user) throws Exception

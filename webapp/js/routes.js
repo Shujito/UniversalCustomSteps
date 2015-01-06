@@ -20,25 +20,40 @@ function routeTemplate(source,init,fn) {
 
 function header(ctx,next) {
 	lawn.get('login-data', function (data) {
-		//console.log(data);
-		//*
 		if (data && data.value && data.value['access_token']) {
 			$('#menu-login').addClass('hidden');
+			$('#menu-register').addClass('hidden');
+			$('#menu-me').removeClass('hidden');
 			$('#menu-logout').removeClass('hidden');
 		} else {
 			$('#menu-login').removeClass('hidden');
+			$('#menu-register').removeClass('hidden');
+			$('#menu-me').addClass('hidden');
 			$('#menu-logout').addClass('hidden');
 		}
-		//*/
 	});
 	next();
 }
 
 function index(ctx,next) {
-	//console.log('init:'+!!ctx.init);
+	if (ctx.init) {
+		lawn.get('login-data', function (data) {
+			if (data && data.value && data.value['access_token']) {
+				var accessToken = data.value['access_token'];
+				Utils.get('/api/users/me',{'access-token':accessToken},function (err,data){
+					console.log('err:',err,'data:',data);
+					$('#menu-me a.btn').text(data['display_name']);
+				});
+			}
+		});
+	}
+	console.log('init:',ctx.init);
 	$('li.active').removeClass('active');
 	$('[href="'+ ctx.path +'"]').parent().addClass('active');
 	//$('#ucs-collapse-menu').collapse('hide');
+	/*
+	
+	//*/
 	next();
 }
 
@@ -54,7 +69,6 @@ page('/songs', function songs(ctx) {
 
 page('/song/:id', function songs(ctx,next) {
 	console.log('context:',ctx)
-	//console.log(ctx.params.id);
 	routeTemplate('#song_id-template',ctx.init);
 });
 
@@ -68,13 +82,10 @@ function isLogged(actuallyIs) {
 	actuallyIs = !!actuallyIs;
 	return function isLogged(ctx,next) {
 		lawn.get('login-data', function (data) {
-			console.log('login-data:',data);
 			var has = data && data.value && data.value['access_token'];
 			if ((actuallyIs && !has) || has ) {
-				console.log('logged');
 				next();
 			} else {
-				console.log('not logged');
 				page('/');
 			}
 		})
@@ -93,6 +104,12 @@ page('/register', isLogged(true), function register(ctx) {
 	});
 });
 
+page('/me', isLogged(false), function me(ctx) {
+	routeTemplate('#me-template', ctx.init, function () {
+		window.Me();
+	});
+});
+
 page('/logout', isLogged(false), function logout(ctx) {
 	routeTemplate('#logout-template', ctx.init, function () {
 		window.Logout();
@@ -101,7 +118,7 @@ page('/logout', isLogged(false), function logout(ctx) {
 
 page('*', function nothing(ctx) {
 	routeTemplate('#404-template', ctx.init, function () {
-		console.log('noh!')
+		console.log('noh!');
 	});
 });
 

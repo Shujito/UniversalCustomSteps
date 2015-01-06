@@ -18,7 +18,7 @@ window.Utils.ajax = function(method,url,headers,data,callback) {
 		else
 			url = newHost + '/' + url;
 	}
-	console.log(url);
+	//console.log(url);
 	var options = {};
 	options.type = method;
 	options.url = url;
@@ -39,7 +39,7 @@ window.Utils.ajax = function(method,url,headers,data,callback) {
 		if(callback && (e.responseJSON || e.response)) {
 			callback(e.responseJSON || e.response);
 		} else {
-			callback({ message:'cors' });
+			callback({ message:'cors or no dest' });
 		}
 	};
 	$.ajax(options);

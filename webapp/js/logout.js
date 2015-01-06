@@ -21,7 +21,4 @@ window.Logout = function Logout() {
 			});
 		});
 	});
-	$('button#logout-no').on('click',function(e){
-		window.history.back();
-	});
 }

@@ -18,6 +18,8 @@ html
 			include ./_imports/register.jade
 		script#logout-template(type='text/x-template')
 			include ./_imports/logout.jade
+		script#me-template(type='text/x-template')
+			include ./_imports/me.jade
 	body(role='document')
 		.navbar.navbar-inverse.navbar-fixed-top
 			.container
@@ -33,8 +35,10 @@ html
 						li#menu-songs: a(href='/songs') Songs
 						li#menu-ucs:   a(href='/ucs') UCS
 					ul.nav.navbar-nav.navbar-right
-						li#menu-login: a.btn(href='/login') Login
-						li#menu-logout: a.btn(href='/logout') Logout
+						li#menu-login:    a.btn(href='/login') Login
+						li#menu-register: a.btn(href='/register') Register
+						li#menu-me:       a.btn(href='/me') Me
+						li#menu-logout:   a.btn(href='/logout') Logout
 		#content
 		include ./_imports/overlays.jade
 		script(src='/app.js')

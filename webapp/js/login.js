@@ -36,7 +36,7 @@ window.Login = function Login() {
 				key:'login-data',
 				value: data
 			});
-			page('/');
+			page('/me');
 		});
 	});
 }
