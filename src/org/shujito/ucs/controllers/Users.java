@@ -5,7 +5,6 @@ import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -125,17 +124,6 @@ public class Users
 		transaction.del("session:" + user.accessToken);
 		transaction.exec();
 		return Response.accepted().build();
-	}
-	
-	@GET
-	@Path("/test_auth")
-	public Response beanAuth(@BeanParam User user) throws Exception
-	{
-		user.continueOrThrow();
-		Map<String, Object> messageMap = new HashMap<>();
-		messageMap.put("success", true);
-		messageMap.put("message", "Hello, " + user.displayName + "!");
-		return Response.ok(messageMap).build();
 	}
 	
 	private void validateUser(User user, User.Validation validation)

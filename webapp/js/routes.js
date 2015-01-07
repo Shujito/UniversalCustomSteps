@@ -36,24 +36,17 @@ function header(ctx,next) {
 }
 
 function index(ctx,next) {
-	if (ctx.init) {
-		lawn.get('login-data', function (data) {
-			if (data && data.value && data.value['access_token']) {
-				var accessToken = data.value['access_token'];
-				Utils.get('/api/users/me',{'access-token':accessToken},function (err,data){
-					console.log('err:',err,'data:',data);
-					$('#menu-me a.btn').text(data['display_name']);
-				});
+	if (!window['user-data']) {
+		Users.me(function index(err,data) {
+			if (err || !data) {
+				return;
 			}
+			window['user-data'] = data;
+			$('#menu-me a.btn').text(data['display_name']);
 		});
 	}
-	console.log('init:',ctx.init);
 	$('li.active').removeClass('active');
 	$('[href="'+ ctx.path +'"]').parent().addClass('active');
-	//$('#ucs-collapse-menu').collapse('hide');
-	/*
-	
-	//*/
 	next();
 }
 
@@ -88,7 +81,7 @@ function isLogged(actuallyIs) {
 			} else {
 				page('/');
 			}
-		})
+		});
 	}
 }
 

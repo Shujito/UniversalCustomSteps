@@ -1,5 +1,5 @@
 window.Login = function Login() {
-	$('#btn-login').on('click', function(ev){
+	$('#btn-login').on('click', function (ev){
 		var button = $(this);
 		ev.preventDefault();
 		var stuff = Utils.serializeInputs('#form-login');
@@ -16,7 +16,8 @@ window.Login = function Login() {
 			return;
 		}
 		button.button('loading');
-		Utils.post('/api/users/login', null, stuff, function(err,data) {
+		//Utils.post('/api/users/login', null, stuff, function (err,data) {
+		Users.login(stuff, function (err,data) {
 			button.button('reset');
 			if (err) {
 				console.log(err);
@@ -35,8 +36,9 @@ window.Login = function Login() {
 			lawn.save({
 				key:'login-data',
 				value: data
+			},function (data){
+				page('/me');
 			});
-			page('/me');
 		});
 	});
 }

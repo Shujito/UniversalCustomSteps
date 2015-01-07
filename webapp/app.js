@@ -5,9 +5,10 @@ window.$ = jQuery;
 require('bootstrap');
 window.rfc822validate = require('rfc822-validate');
 // libs
-require('./js/libs/lawnchair-0.6.1.js');
-// own stuff
-//require('./js/songs.js');
+require('./js/_libs/lawnchair-0.6.1.js');
+// controller
+require('./js/controllers/users.js');
+// view
 require('./js/login.js');
 require('./js/logout.js');
 require('./js/me.js');

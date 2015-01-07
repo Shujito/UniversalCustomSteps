@@ -38,11 +38,12 @@ window.Register = function Login() {
 			return;
 		}
 		button.button('loading');
-		Utils.post('/api/users/register', null, stuff, function(err,data) {
+		//Utils.post('/api/users/register', null, stuff, function(err,data) {
+		Users.register(stuff, function(err,data) {
 			button.button('reset');
 			if (err) {
 				console.log(err);
-				if (err.status === 404)
+				//if (err.status === 404)
 				alert(err.message);
 				return;
 			}
