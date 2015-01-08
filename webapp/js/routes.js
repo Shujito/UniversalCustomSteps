@@ -41,6 +41,7 @@ function index(ctx,next) {
 			if (err || !data) {
 				return;
 			}
+			// TODO: put it on the lawnchair maybe...
 			window['user-data'] = data;
 			$('#menu-me a.btn').text(data['display_name']);
 		});

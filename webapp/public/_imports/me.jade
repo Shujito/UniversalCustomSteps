@@ -2,3 +2,26 @@
 	.container
 		h2 My profile page.
 		small Make adjustments here
+.container
+	.row
+		.col-xs-12
+			form#form-user-data.form-horizontal.size-480.center
+				h3 Account info
+				hr
+				.form-group
+					label.col-sm-4.control-label Display Name
+					.col-sm-8
+						input.form-control(maxlength='100',type='text',name='display_name')
+				.form-group
+					label.col-sm-4.control-label Email
+					.col-sm-8
+						input.form-control(maxlength='100',type='email',name='email')
+				.form-group
+					label.col-sm-4.control-label Change password
+					.col-sm-8
+						input.form-control(maxlength='100',type='password',name='password',placeholder='unchanged')
+				.form-group
+					label.col-sm-4.control-label Change password
+					.col-sm-8
+						input.form-control(maxlength='100',type='confirm',name='confirm',placeholder='unchanged')
+							
