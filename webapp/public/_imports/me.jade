@@ -1,4 +1,4 @@
-.jumbotron
+//-.jumbotron
 	.container
 		h2 My profile page.
 		small Make adjustments here
@@ -6,7 +6,9 @@
 	.row
 		.col-xs-12
 			form#form-user-data.form-horizontal.size-480.center
-				h3 Account info
+				.form-group
+					.col-sm-8.col-sm-offset-4
+						h2 Account info
 				hr
 				.form-group
 					label.col-sm-4.control-label Display Name
@@ -24,4 +26,7 @@
 					label.col-sm-4.control-label Change password
 					.col-sm-8
 						input.form-control(maxlength='100',type='confirm',name='confirm',placeholder='unchanged')
-							
+				.form-group
+					.col-sm-8.col-sm-offset-4
+						button#btn-save.btn.btn-default(data-loading-text='Saving').
+							Save changes
