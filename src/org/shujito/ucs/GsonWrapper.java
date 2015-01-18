@@ -18,8 +18,6 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
-import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
 
 public class GsonWrapper
 {
@@ -33,20 +31,13 @@ public class GsonWrapper
 		@Override
 		public JsonElement serialize(byte[] src, Type typeOfSrc, JsonSerializationContext context)
 		{
-			return new JsonPrimitive(Base64.encode(src));
+			return new JsonPrimitive(Crypto.base64encode(src));
 		}
 		
 		@Override
 		public byte[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
 		{
-			try
-			{
-				return Base64.decode(json.getAsString());
-			}
-			catch (Base64DecodingException ex)
-			{
-				throw new RuntimeException(ex);
-			}
+			return Crypto.base64decode(json.getAsString());
 		}
 	}
 	

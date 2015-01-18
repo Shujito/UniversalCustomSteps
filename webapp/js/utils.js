@@ -60,3 +60,17 @@ window.Utils.put = function(url,headers,data,callback) {
 window.Utils.delete = function(url,headers,callback) {
 	window.Utils.ajax('DELETE',url,headers,null,callback);
 };
+
+window.alert = window.Utils.alert = function(title,message,type) {
+	swal({
+		title:title || '',
+		text:message || '',
+		type:type || undefined,
+		allowOutsideClick:true
+	});
+}
+
+window.alert.info = function(title,message) { if (!message) { message = title; title = ''; } window.alert(title,message,'info'); }
+window.alert.error = function(title,message) { if (!message) { message = title; title = ''; } window.alert(title,message,'error'); }
+window.alert.warning = function(title,message) { if (!message) { message = title; title = ''; } window.alert(title,message,'warning'); }
+window.alert.success = function(title,message) { if (!message) { message = title; title = ''; } window.alert(title,message,'success'); }

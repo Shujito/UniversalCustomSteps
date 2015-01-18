@@ -80,8 +80,12 @@ public class Application
 		servletHolder.setInitOrder(0);
 		servletHolder.setInitParameter(ServerProperties.PROVIDER_PACKAGES, "org.shujito.ucs.controllers");
 		// CORS
-		if (argsMap.get("--enable-cors"))
+		Boolean enableCors = argsMap.get("--enable-cors");
+		if (enableCors != null && enableCors.booleanValue())
 		{
+			System.out.println("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+			System.out.println(">> CORS Enabled");
+			System.out.println("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
 			CrossOriginFilter corsFilter = new CrossOriginFilter();
 			FilterHolder filterHolder = new FilterHolder();
 			filterHolder.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "http://0.0.0.0:9000,http://localhost:9000,http://127.0.0.1:9000");

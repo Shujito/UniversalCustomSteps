@@ -9,6 +9,10 @@
 				.form-group
 					.col-sm-8.col-sm-offset-4
 						h2 Account info
+				.form-group
+					label.col-sm-4.control-label Profile pic
+					.col-sm-8
+						img.img-rounded(width='144', height='144')
 				hr
 				.form-group
 					label.col-sm-4.control-label Display Name
@@ -28,5 +32,5 @@
 						input.form-control(maxlength='100',type='confirm',name='confirm',placeholder='unchanged')
 				.form-group
 					.col-sm-8.col-sm-offset-4
-						button#btn-save.btn.btn-default(data-loading-text='Saving').
+						button#btn-save.btn.btn-primary(data-loading-text='Saving').
 							Save changes

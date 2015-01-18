@@ -23,33 +23,32 @@ window.Register = function Login() {
 			if (stuff.confirm.length === 0) {
 				inputConfirm.parent().addClass('has-error');
 			}
-			alert('Fill in your login information!');
+			alert.warning('Fill in your login information!');
 			return;
 		}
 		if (!rfc822validate(stuff.email)) {
 			inputEmail.parent().addClass('has-error');
-			alert('Invalid email address');
+			alert.warning('Invalid email address');
 			return;
 		}
 		if (stuff.password !== stuff.confirm) {
 			inputPassword.parent().addClass('has-error');
 			inputConfirm.parent().addClass('has-error');
-			alert('Passwords do not match!');
+			alert.warning('Passwords do not match!');
 			return;
 		}
 		button.button('loading');
-		//Utils.post('/api/users/register', null, stuff, function(err,data) {
 		Users.register(stuff, function(err,data) {
 			button.button('reset');
 			if (err) {
 				console.log(err);
 				//if (err.status === 404)
-				alert(err.message);
+				alert.error(err.message);
 				return;
 			}
 			//console.log('login:',data);
 			page('/login');
-			alert('you can login now!');
+			alert.success('you can login now!');
 		});
 	});
 }

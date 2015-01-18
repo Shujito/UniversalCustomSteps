@@ -1,5 +1,4 @@
-function routeTemplate(source,init,fn) {
-	var newHtml = $(source).text();
+function renderTemplate(newHtml,init,fn) {
 	var content = $('#content');
 	if (init) {
 		content.html(newHtml);
@@ -16,6 +15,11 @@ function routeTemplate(source,init,fn) {
 			}
 		},300);
 	}
+}
+
+function routeTemplate(source,init,fn) {
+	var newHtml = $(source).text();
+	renderTemplate(newHtml);
 }
 
 function header(ctx,next) {
@@ -36,11 +40,13 @@ function header(ctx,next) {
 }
 
 function index(ctx,next) {
+	console.log('context:',ctx);
 	if (!window['user-data']) {
 		Users.me(function index(err,data) {
 			if (err || !data) {
 				return;
 			}
+			$.event.trigger({type:'user-data','user-data':data});
 			// TODO: put it on the lawnchair maybe...
 			window['user-data'] = data;
 			$('#menu-me a.btn').text(data['display_name']);
@@ -54,11 +60,15 @@ function index(ctx,next) {
 page('*', header, index);
 
 page('/', function index(ctx) {
-	routeTemplate('#songs-template',ctx.init);
+	routeTemplate('#index-template',ctx.init);
 });
 
 page('/songs', function songs(ctx) {
-	routeTemplate('#songs-template',ctx.init);
+	window.Songs.render(function(html) {
+		renderTemplate(html, ctx.init, function (){
+			window.Songs();
+		});
+	})
 });
 
 page('/song/:id', function songs(ctx,next) {
@@ -118,7 +128,7 @@ page('*', function nothing(ctx) {
 
 $(function () {
 	page();
-	$('li a').on('click',function(e){
+	$('li a').on('click',function(e) {
 		if (window.innerWidth < 768)
 			$('#ucs-collapse-menu').collapse('hide');
 	});

@@ -2,21 +2,17 @@
   "name": "ucs-webapp",
   "version": "0.0.1",
   "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "MIT",
-  "devDependencies": {
+  "dependencies": {
     "bootstrap": "^3.3.1",
+    "bootstrap-sweetalert": "^0.4.2",
     "jquery": "^2.1.3",
     "page": "^1.5.0",
     "rfc822-validate": "^1.0.0"
   },
-  "dependencies": {
-    "bootstrap": "^3.3.1",
-    "rfc822-validate": "^1.0.0",
-    "page": "^1.5.0",
-    "jquery": "^2.1.3"
-  }
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Shujito",
+  "license": "MIT"
 }

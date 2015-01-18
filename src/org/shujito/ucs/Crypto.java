@@ -2,9 +2,7 @@ package org.shujito.ucs;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
+import java.util.Base64;
 
 public class Crypto
 {
@@ -34,18 +32,11 @@ public class Crypto
 	
 	public static byte[] base64decode(String base64String)
 	{
-		try
-		{
-			return Base64.decode(base64String);
-		}
-		catch (Base64DecodingException e)
-		{
-			return null;
-		}
+		return Base64.getDecoder().decode(base64String);
 	}
 	
-	public static String base64encode(byte[] base64bytes)
+	public static String base64encode(byte[] rawBytes)
 	{
-		return Base64.encode(base64bytes);
+		return Base64.getEncoder().encodeToString(rawBytes);
 	}
 }

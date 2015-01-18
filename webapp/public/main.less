@@ -1,6 +1,12 @@
 @import '../node_modules/bootstrap/less/bootstrap';
+@import '../node_modules/bootstrap-sweetalert/lib/sweet-alert.less';
 
 @body-bg:#ffe;
+@brand-primary:	#55A;
+@brand-success:	#0A0;
+@brand-info:	#5AA;
+@brand-warning:	#DA0;
+@brand-danger:	#A55;
 
 html {
 	overflow-y: scroll;
@@ -8,6 +14,14 @@ html {
 
 body {
 	padding-top: 70px;
+}
+
+img {
+	background: #eee;
+}
+
+.navbar-fixed-top {
+	z-index: 500;
 }
 
 .center {
@@ -38,11 +52,4 @@ body {
 #content.transition {
 	margin-top: -10px;
 	opacity: 0;
-}
-
-#general-alert {
-	position: fixed;
-	bottom: 20px;
-	right: 40px;
-	z-index: 99999;
 }

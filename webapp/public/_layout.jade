@@ -6,8 +6,14 @@ html
 		meta(http-equiv='X-UA-Compatible', content='IE=edge')
 		meta(name='viewport' content='width=device-width, initial-scale=1, user-scalable=no')
 		link(href='/main.css',rel='stylesheet')
+		script#index-template(type='text/x-template')
+			include ./_imports/index.jade
 		script#songs-template(type='text/x-template')
 			include ./_imports/songs.jade
+		script#songs-group-template(type='text/x-template')
+			include ./_imports/songs/group.jade
+		script#songs-song-template(type='text/x-template')
+			include ./_imports/songs/song.jade
 		script#404-template(type='text/x-template')
 			include ./_imports/404.jade
 		script#song_id-template(type='text/x-template')
@@ -40,5 +46,4 @@ html
 						li#menu-me:       a.btn(href='/me') Me
 						li#menu-logout:   a.btn(href='/logout') Logout
 		#content
-		include ./_imports/overlays.jade
 		script(src='/app.js')

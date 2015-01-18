@@ -1,5 +1,5 @@
 window.Login = function Login() {
-	$('#btn-login').on('click', function (ev){
+	$('#btn-login').on('click', function (ev) {
 		var button = $(this);
 		ev.preventDefault();
 		var stuff = Utils.serializeInputs('#form-login');
@@ -12,11 +12,10 @@ window.Login = function Login() {
 				inputUsername.parent().addClass('has-error');
 			if (stuff.password.length === 0)
 				inputPassword.parent().addClass('has-error');
-			alert('Fill in your credentials!');
+			alert.warning('Fill in your credentials!');
 			return;
 		}
 		button.button('loading');
-		//Utils.post('/api/users/login', null, stuff, function (err,data) {
 		Users.login(stuff, function (err,data) {
 			button.button('reset');
 			if (err) {
@@ -29,14 +28,14 @@ window.Login = function Login() {
 					// password is bad
 					inputPassword.parent().addClass('has-error');
 				}
-				alert(err.message);
+				alert.warning(err.message);
 				return;
 			}
 			// save it!
 			lawn.save({
 				key:'login-data',
 				value: data
-			},function (data){
+			},function (data) {
 				page('/me');
 			});
 		});
