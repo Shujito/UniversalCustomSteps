@@ -39,4 +39,14 @@ public class Crypto
 	{
 		return Base64.getEncoder().encodeToString(rawBytes);
 	}
+	
+	public static byte[] compressString(String s)
+	{
+		throw new UnsupportedOperationException();
+	}
+	
+	public static byte[] decompressString(String s)
+	{
+		throw new UnsupportedOperationException();
+	}
 }

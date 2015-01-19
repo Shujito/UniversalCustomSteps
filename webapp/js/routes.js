@@ -19,7 +19,7 @@ function renderTemplate(newHtml,init,fn) {
 
 function routeTemplate(source,init,fn) {
 	var newHtml = $(source).text();
-	renderTemplate(newHtml);
+	renderTemplate(newHtml,init,fn);
 }
 
 function header(ctx,next) {
@@ -40,7 +40,6 @@ function header(ctx,next) {
 }
 
 function index(ctx,next) {
-	console.log('context:',ctx);
 	if (!window['user-data']) {
 		Users.me(function index(err,data) {
 			if (err || !data) {
@@ -72,7 +71,7 @@ page('/songs', function songs(ctx) {
 });
 
 page('/song/:id', function songs(ctx,next) {
-	console.log('context:',ctx)
+	console.log('context:',ctx);
 	routeTemplate('#song_id-template',ctx.init);
 });
 

@@ -59,8 +59,8 @@ public class Users
 	}
 	
 	@GET
-	@Path("/{userID}")
-	public Response user(@PathParam("userID") String userID)
+	@Path("/{user-id}")
+	public Response user(@PathParam("user-id") String userID)
 	{
 		if (userID.length() != 32)
 			throw new ApiException(Status.NOT_FOUND.getReasonPhrase(), Status.NOT_FOUND.getStatusCode());
