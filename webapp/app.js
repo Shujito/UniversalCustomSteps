@@ -1,3 +1,4 @@
+'use strict';
 // node modules
 window.jQuery = require('jquery');
 window.$ = jQuery;

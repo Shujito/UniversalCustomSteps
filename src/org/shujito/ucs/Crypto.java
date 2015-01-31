@@ -45,7 +45,7 @@ public class Crypto
 		throw new UnsupportedOperationException();
 	}
 	
-	public static byte[] decompressString(String s)
+	public static String decompressString(byte[] b)
 	{
 		throw new UnsupportedOperationException();
 	}
