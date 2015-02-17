@@ -1,7 +1,8 @@
 package org.shujito.ucs.models;
 
 import java.util.Date;
-import java.util.UUID;
+
+import org.shujito.ucs.Crypto;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -19,7 +20,7 @@ public class UserCustomStep
 	
 	public UserCustomStep()
 	{
-		this.id = UUID.randomUUID().toString().replace("-", "");
+		this.id = Crypto.uuid();
 		this.modifiedAt = this.createdAt = new Date();
 	}
 	

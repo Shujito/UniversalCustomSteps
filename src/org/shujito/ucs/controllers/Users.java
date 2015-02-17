@@ -194,7 +194,7 @@ public class Users
 	
 	private String saveUserData(Jedis jedis, User user, PasswordSalt passwordSalt)
 	{
-		String userID = UUID.randomUUID().toString().replace("-", "");
+		String userID = Crypto.uuid();
 		user.created = new Date().getTime();
 		Transaction transaction = jedis.multi();
 		transaction.hset("user:" + userID, User.DISPLAY_NAME, user.displayName);

@@ -3,6 +3,7 @@ package org.shujito.ucs;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.UUID;
 
 public class Crypto
 {
@@ -28,6 +29,11 @@ public class Crypto
 	public static byte[] sha512(byte[] bytes)
 	{
 		return digest(bytes, "SHA-512");
+	}
+	
+	public static String uuid()
+	{
+		return UUID.randomUUID().toString().replace("-", "");
 	}
 	
 	public static byte[] base64decode(String base64String)
