@@ -3,7 +3,6 @@ package org.shujito.ucs;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.Map;
 
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
@@ -17,7 +16,6 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.annotations.SerializedName;
-import com.google.gson.reflect.TypeToken;
 
 public class GsonWrapper
 {
@@ -65,7 +63,6 @@ public class GsonWrapper
 		}
 	}
 	
-	public static final TypeToken<Map<String, String>> stringMapTypeToken = new TypeToken<Map<String, String>>() {};
 	private static GsonWrapper instance = null;
 	
 	public static GsonWrapper getInstance()
@@ -81,7 +78,6 @@ public class GsonWrapper
 	{
 		if (instance != null)
 			throw new RuntimeException();
-		instance = this;
 		ExcludeFieldsWithoutSerializedName sfwosn = new ExcludeFieldsWithoutSerializedName();
 		this.mGson = new GsonBuilder()
 			.addDeserializationExclusionStrategy(sfwosn)
