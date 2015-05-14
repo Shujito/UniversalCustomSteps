@@ -1,4 +1,0 @@
-harp compile . ../public/
-mv ../public/app.js ../public/app.bak.js
-closure-compiler ../public/app.bak.js > ../public/app.js
-rm ../public/app.bak.js
