@@ -20,21 +20,21 @@ import com.google.gson.Gson;
 @Produces(MediaType.APPLICATION_JSON)
 public class Users
 {
-    public static final String TAG = Users.class.getSimpleName();
-    private final Gson gson = GsonWrapper.getInstance().getGson();
-    
-    @GET
-    public Response index()
-    {
-        throw new ApiException("Not yet", Status.NOT_FOUND.getStatusCode());
-    }
-    
-    @POST
-    @Path("/register")
-    public Response register(User user) throws Exception
-    {
-        System.out.println(this.gson.toJson(user));
-        throw new ApiException("Not yet", Status.NOT_FOUND.getStatusCode());
-        //return Response.ok(user).build();
-    }
+	public static final String TAG = Users.class.getSimpleName();
+	private final Gson gson = GsonWrapper.getInstance().getGson();
+	
+	@GET
+	public Response index()
+	{
+		throw new ApiException("Not yet", Status.NOT_FOUND.getStatusCode());
+	}
+	
+	@POST
+	@Path("/register")
+	public Response register(User user) throws Exception
+	{
+		System.out.println(this.gson.toJson(user));
+		throw new ApiException("Not yet", Status.NOT_FOUND.getStatusCode());
+		//return Response.ok(user).build();
+	}
 }
