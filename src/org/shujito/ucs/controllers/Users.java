@@ -1,5 +1,12 @@
 package org.shujito.ucs.controllers;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -11,6 +18,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.shujito.ucs.ApiException;
 import org.shujito.ucs.GsonWrapper;
+import org.shujito.ucs.db.Database;
 import org.shujito.ucs.models.User;
 
 import com.google.gson.Gson;
@@ -24,9 +32,21 @@ public class Users
 	private final Gson gson = GsonWrapper.getInstance().getGson();
 	
 	@GET
-	public Response index()
+	public Response index() throws Exception
 	{
-		throw new ApiException("Not yet", Status.NOT_FOUND.getStatusCode());
+		try (Statement smt = Database.createStatement())
+		{
+			try (ResultSet rs = smt.executeQuery("select uuid,username,display_name,created_at from users where deleted_at is null"))
+			{
+				List<User> users = new ArrayList<>();
+				while (rs.next())
+				{
+					User user = User.fromResultSet(rs);
+					users.add(user);
+				}
+				return Response.ok(users).build();
+			}
+		}
 	}
 	
 	@POST
@@ -34,7 +54,24 @@ public class Users
 	public Response register(User user) throws Exception
 	{
 		System.out.println(this.gson.toJson(user));
-		throw new ApiException("Not yet", Status.NOT_FOUND.getStatusCode());
-		//return Response.ok(user).build();
+		//throw new ApiException("Not yet", Status.NOT_FOUND.getStatusCode());
+		try (PreparedStatement psm = Database.prepareStatement("insert into users(username,display_name,password,email) values(?,?,?,?)"))
+		{
+			psm.setString(1, user.username == null ? user.username : user.username.toLowerCase());
+			psm.setString(2, user.username);
+			psm.setString(3, user.password);
+			psm.setString(4, user.email);
+			psm.executeUpdate();
+		}
+		catch (SQLException ex)
+		{
+			throw new ApiException(ex.getMessage(), Status.CONFLICT.getStatusCode());
+		}
+		user.createdAt = null;
+		user.updatedAt = null;
+		user.deletedAt = null;
+		user.displayName = null;
+		user.password = null;
+		return Response.ok(user).build();
 	}
 }
