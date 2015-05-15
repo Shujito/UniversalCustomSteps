@@ -26,12 +26,7 @@ public class Application
     {
         // create jetty server
         Server server = new Server(1337);
-        // file server
-        final ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setDirectoriesListed(true);
-        resourceHandler.setWelcomeFiles(new String[] { "index.html" });
-        resourceHandler.setResourceBase("public");
-        // huh
+        // rewriter
         RewriteHandler rewriteHandler = new RewriteHandler();
         rewriteHandler.addRule(new Rule() {
             @Override
@@ -45,6 +40,11 @@ public class Application
                 return "/";
             }
         });
+        // file server
+        final ResourceHandler resourceHandler = new ResourceHandler();
+        resourceHandler.setDirectoriesListed(true);
+        resourceHandler.setWelcomeFiles(new String[] { "index.html" });
+        resourceHandler.setResourceBase("public");
         // make a context for servlets
         ServletContextHandler serverContextHandler = new ServletContextHandler(server, "/api", ServletContextHandler.SESSIONS);
         // api errors
