@@ -3,6 +3,11 @@ package org.shujito.ucs.models;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 
+import javax.ws.rs.core.Response.Status;
+
+import org.shujito.ucs.ApiException;
+import org.shujito.ucs.Constants;
+
 import com.google.gson.annotations.SerializedName;
 
 public class User
@@ -72,4 +77,18 @@ public class User
 	public String password;
 	@SerializedName(EMAIL)
 	public String email;
+	
+	public void validate()
+	{
+		if (this.username == null)
+			throw new ApiException(Constants.Strings.NO_USERNAME_SPECIFIED, Status.NOT_ACCEPTABLE.getStatusCode());
+		if (this.password == null)
+			throw new ApiException(Constants.Strings.NO_PASSWORD_SPECIFIED, Status.NOT_ACCEPTABLE.getStatusCode());
+		if (this.email == null)
+			throw new ApiException(Constants.Strings.NO_EMAIL_SPECIFIED, Status.NOT_ACCEPTABLE.getStatusCode());
+		if (this.username.length() < 2 || this.username.length() > 24)
+			throw new ApiException(Constants.Strings.USERNAME_CAN_ONLY_CONTAIN_BETWEEN_2_AND_24_LETTERS, Status.NOT_ACCEPTABLE.getStatusCode());
+		if (this.password.length() < 10)
+			throw new ApiException(Constants.Strings.PASSWORD_IS_TOO_SHORT, Status.NOT_ACCEPTABLE.getStatusCode());
+	}
 }

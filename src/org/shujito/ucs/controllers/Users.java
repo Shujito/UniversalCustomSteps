@@ -55,9 +55,11 @@ public class Users
 	{
 		System.out.println(this.gson.toJson(user));
 		//throw new ApiException("Not yet", Status.NOT_FOUND.getStatusCode());
+		user.validate();
 		try (PreparedStatement psm = Database.prepareStatement("insert into users(username,display_name,password,email) values(?,?,?,?)"))
 		{
 			psm.setString(1, user.username == null ? user.username : user.username.toLowerCase());
+			//psm.setString(2, user.displayName == null ? user.username : user.displayName);
 			psm.setString(2, user.username);
 			psm.setString(3, user.password);
 			psm.setString(4, user.email);
