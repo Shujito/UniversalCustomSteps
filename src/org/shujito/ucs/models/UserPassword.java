@@ -12,7 +12,7 @@ public class UserPassword
 	public static final String USER_UUID = "user_uuid";
 	public static final String PASSWORD = "password";
 	public static final String SALT = "salt";
-	public String userUuid;
+	public String user;
 	public String password;
 	public String salt;
 	
@@ -61,7 +61,7 @@ public class UserPassword
 		{
 			psm.setString(1, this.password);
 			psm.setString(2, this.salt);
-			psm.setString(3, this.userUuid);
+			psm.setString(3, this.user);
 			psm.executeUpdate();
 		}
 	}

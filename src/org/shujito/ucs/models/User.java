@@ -98,9 +98,9 @@ public class User
 	
 	public void save() throws Exception
 	{
-		try (PreparedStatement psm = Database.prepareStatement("insert into users(username,display_name,email) values(?,?,?)"))
+		try (PreparedStatement psm = Database.prepareStatement("insert into users(username,display_name,email) values(lower(?),?,?)"))
 		{
-			psm.setString(1, this.username == null ? this.username : this.username.toLowerCase());
+			psm.setString(1, this.username);
 			psm.setString(2, this.username);
 			psm.setString(3, this.email);
 			psm.executeUpdate();
