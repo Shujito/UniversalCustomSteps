@@ -1,6 +1,5 @@
 package org.shujito.ucs.models;
 
-import java.security.SecureRandom;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -10,7 +9,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.shujito.ucs.ApiException;
 import org.shujito.ucs.Constants;
-import org.shujito.ucs.Crypto;
 import org.shujito.ucs.db.Database;
 
 import com.google.gson.annotations.SerializedName;
@@ -98,43 +96,12 @@ public class User
 			throw new ApiException(Constants.Strings.PASSWORD_IS_TOO_SHORT, Status.NOT_ACCEPTABLE.getStatusCode());
 	}
 	
-	public void hashPassword()
-	{
-		byte[] saltBytes = new byte[16];
-		new SecureRandom().nextBytes(saltBytes);
-		this.hashPassword(saltBytes);
-	}
-	
-	public void hashPassword(byte[] saltBytes)
-	{
-		byte[] passwordBytes = this.password.getBytes();
-		byte[] saltedPasswordBytes = new byte[passwordBytes.length + saltBytes.length];
-		for (int idx = 0; idx < passwordBytes.length; idx++)
-			saltedPasswordBytes[idx] = passwordBytes[idx];
-		for (int idx = 0; idx < saltBytes.length; idx++)
-			saltedPasswordBytes[idx + saltBytes.length] = saltBytes[idx];
-		// hash it
-		byte[] sha256passwordBytes = Crypto.sha256(saltedPasswordBytes);
-		// stretchy
-		byte[] bytesContainer = new byte[sha256passwordBytes.length + saltBytes.length];
-		for (int idx = 0; idx < 0x7ffff; idx++)
-		{
-			for (int jdx = 0; jdx < saltBytes.length; jdx++)
-				bytesContainer[jdx] = saltBytes[jdx];
-			for (int jdx = 0; jdx < sha256passwordBytes.length; jdx++)
-				bytesContainer[jdx + saltBytes.length] = sha256passwordBytes[jdx];
-			sha256passwordBytes = Crypto.sha256(bytesContainer);
-		}
-	}
-	
 	public void save() throws Exception
 	{
 		try (PreparedStatement psm = Database.prepareStatement("insert into users(username,display_name,email) values(?,?,?)"))
 		{
 			psm.setString(1, this.username == null ? this.username : this.username.toLowerCase());
-			//psm.setString(2, user.displayName == null ? user.username : user.displayName);
 			psm.setString(2, this.username);
-			//psm.setString(3, this.password);
 			psm.setString(3, this.email);
 			psm.executeUpdate();
 		}

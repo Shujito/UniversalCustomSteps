@@ -29,6 +29,13 @@ public final class Database
 					+ "email text not null on conflict fail unique on conflict fail,"
 					+ "primary key (uuid) on conflict replace"
 					+ ");");
+				smt.executeUpdate("create table if not exists user_passwords ("
+					+ "user_uuid text not null on conflict fail unique on conflict replace,"
+					+ "password text not null on conflict fail,"
+					+ "salt text not null on conflict fail,"
+					+ "foreign key (user_uuid) references users(uuid),"
+					+ "primary key (user_uuid) on conflict replace"
+					+ ");");
 				smt.executeUpdate("create table if not exists sessions ("
 					+ "uuid text not null on conflict fail default (hex(randomblob(16))),"
 					+ "expires_at integer not null on conflict ignore default (cast(((julianday('now','+7 days') - julianday('1970-01-01')) * 86400000) as integer)),"
@@ -41,6 +48,8 @@ public final class Database
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
+			System.exit(-1);
 			throw new RuntimeException(e);
 		}
 	}

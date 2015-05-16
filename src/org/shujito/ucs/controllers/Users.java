@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 
 import org.shujito.ucs.db.Database;
 import org.shujito.ucs.models.User;
+import org.shujito.ucs.models.UserPassword;
 
 @Path("/users")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -49,6 +50,9 @@ public class Users
 		//throw new ApiException("Not yet", Status.NOT_FOUND.getStatusCode());
 		user.validate();
 		user.save();
+		UserPassword up = new UserPassword(user.password);
+		up.userUuid = user.username.toLowerCase();
+		up.save();
 		user.createdAt = null;
 		user.updatedAt = null;
 		user.deletedAt = null;
