@@ -78,11 +78,11 @@ public class GsonWrapper
 	{
 		if (instance != null)
 			throw new RuntimeException();
-		ExcludeFieldsWithoutSerializedName sfwosn = new ExcludeFieldsWithoutSerializedName();
+		ExcludeFieldsWithoutSerializedName efwosn = new ExcludeFieldsWithoutSerializedName();
 		this.mGson = new GsonBuilder()
 			//.setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-			.addDeserializationExclusionStrategy(sfwosn)
-			.addSerializationExclusionStrategy(sfwosn)
+			.addDeserializationExclusionStrategy(efwosn)
+			.addSerializationExclusionStrategy(efwosn)
 			.registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64Serializer())
 			.create();
 	}

@@ -10,6 +10,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.shujito.ucs.ApiException;
 import org.shujito.ucs.Constants;
+import org.shujito.ucs.Crypto;
 import org.shujito.ucs.db.Database;
 
 import com.google.gson.annotations.SerializedName;
@@ -25,6 +26,7 @@ public class User
 	public static final String USERNAME = "username";
 	public static final String DISPLAY_NAME = "display_name";
 	public static final String PASSWORD = "password";
+	public static final String PASSWORD_SALT = "password_salt";
 	public static final String EMAIL = "email";
 	
 	public static User fromResultSet(ResultSet rs) throws Exception
@@ -77,10 +79,10 @@ public class User
 	public String username;
 	@SerializedName(DISPLAY_NAME)
 	public String displayName;
-	@SerializedName(PASSWORD)
-	public String password;
 	@SerializedName(EMAIL)
 	public String email;
+	@SerializedName(PASSWORD)
+	public String password;
 	
 	public void validate()
 	{
@@ -111,17 +113,29 @@ public class User
 			saltedPasswordBytes[idx] = passwordBytes[idx];
 		for (int idx = 0; idx < saltBytes.length; idx++)
 			saltedPasswordBytes[idx + saltBytes.length] = saltBytes[idx];
+		// hash it
+		byte[] sha256passwordBytes = Crypto.sha256(saltedPasswordBytes);
+		// stretchy
+		byte[] bytesContainer = new byte[sha256passwordBytes.length + saltBytes.length];
+		for (int idx = 0; idx < 0x7ffff; idx++)
+		{
+			for (int jdx = 0; jdx < saltBytes.length; jdx++)
+				bytesContainer[jdx] = saltBytes[jdx];
+			for (int jdx = 0; jdx < sha256passwordBytes.length; jdx++)
+				bytesContainer[jdx + saltBytes.length] = sha256passwordBytes[jdx];
+			sha256passwordBytes = Crypto.sha256(bytesContainer);
+		}
 	}
 	
 	public void save() throws Exception
 	{
-		try (PreparedStatement psm = Database.prepareStatement("insert into users(username,display_name,password,email) values(?,?,?,?)"))
+		try (PreparedStatement psm = Database.prepareStatement("insert into users(username,display_name,email) values(?,?,?)"))
 		{
 			psm.setString(1, this.username == null ? this.username : this.username.toLowerCase());
 			//psm.setString(2, user.displayName == null ? user.username : user.displayName);
 			psm.setString(2, this.username);
-			psm.setString(3, this.password);
-			psm.setString(4, this.email);
+			//psm.setString(3, this.password);
+			psm.setString(3, this.email);
 			psm.executeUpdate();
 		}
 		catch (SQLException ex)

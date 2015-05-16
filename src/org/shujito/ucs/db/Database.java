@@ -9,12 +9,14 @@ public final class Database
 {
 	public static final String TAG = Database.class.getSimpleName();
 	private static final Connection sConnection;
+	//private static final List<String> sTransactionStack = new ArrayList<>();
 	static
 	{
 		try
 		{
-			sConnection = DriverManager.getConnection("jdbc:sqlite:ucs.db3");
-			//sConnection = DriverManager.getConnection("jdbc:sqlite::memory:");
+			//sConnection = DriverManager.getConnection("jdbc:sqlite:ucs.db3");
+			sConnection = DriverManager.getConnection("jdbc:sqlite::memory:");
+			//sConnection.setAutoCommit(false);
 			try (Statement smt = sConnection.createStatement())
 			{
 				smt.executeUpdate("create table if not exists users ("
@@ -24,7 +26,6 @@ public final class Database
 					+ "deleted_at integer,"
 					+ "username text not null on conflict fail unique on conflict fail,"
 					+ "display_name text not null on conflict fail,"
-					+ "password text not null on conflict fail,"
 					+ "email text not null on conflict fail unique on conflict fail,"
 					+ "primary key (uuid) on conflict replace"
 					+ ");");
@@ -36,6 +37,7 @@ public final class Database
 					+ "primary key (uuid) on conflict replace"
 					+ ");");
 			}
+			//sConnection.commit();
 		}
 		catch (Exception e)
 		{
