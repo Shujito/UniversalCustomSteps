@@ -1,12 +1,16 @@
 package org.shujito.ucs.models;
 
+import java.security.SecureRandom;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 import javax.ws.rs.core.Response.Status;
 
 import org.shujito.ucs.ApiException;
 import org.shujito.ucs.Constants;
+import org.shujito.ucs.db.Database;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -90,5 +94,39 @@ public class User
 			throw new ApiException(Constants.Strings.USERNAME_CAN_ONLY_CONTAIN_BETWEEN_2_AND_24_LETTERS, Status.NOT_ACCEPTABLE.getStatusCode());
 		if (this.password.length() < 10)
 			throw new ApiException(Constants.Strings.PASSWORD_IS_TOO_SHORT, Status.NOT_ACCEPTABLE.getStatusCode());
+	}
+	
+	public void hashPassword()
+	{
+		byte[] saltBytes = new byte[16];
+		new SecureRandom().nextBytes(saltBytes);
+		this.hashPassword(saltBytes);
+	}
+	
+	public void hashPassword(byte[] saltBytes)
+	{
+		byte[] passwordBytes = this.password.getBytes();
+		byte[] saltedPasswordBytes = new byte[passwordBytes.length + saltBytes.length];
+		for (int idx = 0; idx < passwordBytes.length; idx++)
+			saltedPasswordBytes[idx] = passwordBytes[idx];
+		for (int idx = 0; idx < saltBytes.length; idx++)
+			saltedPasswordBytes[idx + saltBytes.length] = saltBytes[idx];
+	}
+	
+	public void save() throws Exception
+	{
+		try (PreparedStatement psm = Database.prepareStatement("insert into users(username,display_name,password,email) values(?,?,?,?)"))
+		{
+			psm.setString(1, this.username == null ? this.username : this.username.toLowerCase());
+			//psm.setString(2, user.displayName == null ? user.username : user.displayName);
+			psm.setString(2, this.username);
+			psm.setString(3, this.password);
+			psm.setString(4, this.email);
+			psm.executeUpdate();
+		}
+		catch (SQLException ex)
+		{
+			throw new ApiException(ex.getMessage(), Status.CONFLICT.getStatusCode());
+		}
 	}
 }
