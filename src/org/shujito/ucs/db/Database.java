@@ -31,18 +31,18 @@ public final class Database
 					+ ")");
 				smt.executeUpdate("create table if not exists user_passwords ("
 					+ "user_uuid text not null on conflict fail unique on conflict replace,"
-					+ "password text not null on conflict fail,"
-					+ "salt text not null on conflict fail,"
+					+ "password blob not null on conflict fail,"
+					+ "salt blob not null on conflict fail,"
 					+ "foreign key (user_uuid) references users(uuid),"
 					+ "primary key (user_uuid) on conflict replace"
 					+ ")");
 				smt.executeUpdate("create table if not exists sessions ("
-					+ "uuid text not null on conflict fail default (lower(hex(randomblob(16)))),"
-					+ "expires_at integer not null on conflict ignore default (cast(((julianday('now','+7 days') - julianday('1970-01-01')) * 86400000) as integer)),"
-					+ "user_uuid text not null on conflict ignore,"
-					+ "foreign key (user_uuid) references users(uuid),"
-					+ "primary key (uuid) on conflict replace"
-					+ ")");
+					+ "user_uuid text not null on conflict fail,"
+					+ "access_token blob not null on conflict fail default (randomblob(32)),"
+					+ "expires_at integer not null on conflict ignore default (cast(((julianday('now','+10 minutes') - julianday('1970-01-01')) * 86400000) as integer)),"
+					+ "user_agent text not null on conflict fail,"
+					+ "foreign key (user_uuid) references users(uuid)"
+					+ ");");
 			}
 			//sConnection.commit();
 		}

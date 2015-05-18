@@ -2,6 +2,8 @@ package org.shujito.ucs.models;
 
 import java.security.SecureRandom;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 
 import org.shujito.ucs.Crypto;
 import org.shujito.ucs.db.Database;
@@ -12,14 +14,63 @@ public class UserPassword
 	public static final String USER_UUID = "user_uuid";
 	public static final String PASSWORD = "password";
 	public static final String SALT = "salt";
-	public String user;
-	public String password;
-	public String salt;
+	
+	public static UserPassword fromResultSet(ResultSet rs) throws Exception
+	{
+		ResultSetMetaData rsmd = rs.getMetaData();
+		UserPassword up = new UserPassword();
+		int count = rsmd.getColumnCount();
+		for (int idx = 1; idx <= count; idx++)
+		{
+			switch (rsmd.getColumnLabel(idx))
+			{
+				case USER_UUID:
+					up.userUuid = rs.getString(idx);
+					break;
+				case PASSWORD:
+					up.password = rs.getBytes(idx);
+					break;
+				case SALT:
+					up.salt = rs.getBytes(idx);
+					break;
+			}
+		}
+		return up;
+	}
+	
+	public String userUuid;
+	public byte[] password;
+	public byte[] salt;
+	
+	private UserPassword()
+	{
+	}
 	
 	public UserPassword(String password)
 	{
-		this.password = password;
+		this.password = password.getBytes();
 		this.hashPassword();
+	}
+	
+	public UserPassword(byte[] password, byte[] salt)
+	{
+		this.password = password;
+		this.salt = salt;
+		this.hashPassword(salt);
+	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (!(obj instanceof UserPassword))
+			return false;
+		UserPassword cast = UserPassword.class.cast(obj);
+		int diff = this.password.length ^ cast.password.length;
+		for (int idx = 0; idx < this.password.length && idx < cast.password.length; idx++)
+			diff |= this.password[idx] ^ cast.password[idx];
+		return diff == 0;
 	}
 	
 	public void hashPassword()
@@ -31,7 +82,7 @@ public class UserPassword
 	
 	public void hashPassword(byte[] saltBytes)
 	{
-		byte[] passwordBytes = this.password.getBytes();
+		byte[] passwordBytes = this.password;
 		byte[] saltedPasswordBytes = new byte[passwordBytes.length + saltBytes.length];
 		for (int idx = 0; idx < saltBytes.length; idx++)
 			saltedPasswordBytes[idx] = saltBytes[idx];
@@ -49,19 +100,18 @@ public class UserPassword
 				bytesContainer[jdx + saltBytes.length] = sha256passwordBytes[jdx];
 			sha256passwordBytes = Crypto.sha256(bytesContainer);
 		}
-		this.password = Crypto.base64encode(sha256passwordBytes);
-		this.salt = Crypto.base64encode(saltBytes);
+		this.password = sha256passwordBytes;
+		this.salt = saltBytes;
 	}
 	
-	public void save() throws Exception
+	public void save(String username) throws Exception
 	{
 		try (PreparedStatement psm = Database
-			//.prepareStatement("insert into user_passwords(user_uuid,password,salt) values (?,?,?)"))
-			.prepareStatement("insert into user_passwords(user_uuid,password,salt) select users.uuid as user_uuid,? as password,? as salt from users where users.username = ?"))
+			.prepareStatement("insert into user_passwords(user_uuid,password,salt) select users.uuid as user_uuid,? as password,? as salt from users where users.username = lower(?)"))
 		{
-			psm.setString(1, this.password);
-			psm.setString(2, this.salt);
-			psm.setString(3, this.user);
+			psm.setBytes(1, this.password);
+			psm.setBytes(2, this.salt);
+			psm.setString(3, username);
 			psm.executeUpdate();
 		}
 	}

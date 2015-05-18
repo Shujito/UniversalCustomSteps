@@ -4,9 +4,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.validator.routines.EmailValidator;
 import org.shujito.ucs.ApiException;
 import org.shujito.ucs.Constants;
 import org.shujito.ucs.db.Database;
@@ -15,6 +17,27 @@ import com.google.gson.annotations.SerializedName;
 
 public class User
 {
+	public static class Validation
+	{
+		public final boolean username;
+		public final boolean password;
+		public final boolean email;
+		
+		public Validation()
+		{
+			this.username = false;
+			this.password = false;
+			this.email = false;
+		}
+		
+		public Validation(boolean username, boolean password, boolean email)
+		{
+			this.username = username;
+			this.password = password;
+			this.email = email;
+		}
+	}
+	
 	public static final String TAG = User.class.getSimpleName();
 	public static final String TABLE = "users";
 	public static final String UUID = "uuid";
@@ -82,18 +105,42 @@ public class User
 	@SerializedName(PASSWORD)
 	public String password;
 	
-	public void validate()
+	public void validate(Validation validate)
 	{
-		if (this.username == null)
+		if (validate.username && this.username == null)
 			throw new ApiException(Constants.Strings.NO_USERNAME_SPECIFIED, Status.NOT_ACCEPTABLE.getStatusCode());
-		if (this.password == null)
+		if (validate.password && this.password == null)
 			throw new ApiException(Constants.Strings.NO_PASSWORD_SPECIFIED, Status.NOT_ACCEPTABLE.getStatusCode());
-		if (this.email == null)
+		if (validate.email && this.email == null)
 			throw new ApiException(Constants.Strings.NO_EMAIL_SPECIFIED, Status.NOT_ACCEPTABLE.getStatusCode());
-		if (this.username.length() < 2 || this.username.length() > 24)
-			throw new ApiException(Constants.Strings.USERNAME_CAN_ONLY_CONTAIN_BETWEEN_2_AND_24_LETTERS, Status.NOT_ACCEPTABLE.getStatusCode());
-		if (this.password.length() < 10)
+		// lengths
+		if (validate.password && this.password.length() < 10)
 			throw new ApiException(Constants.Strings.PASSWORD_IS_TOO_SHORT, Status.NOT_ACCEPTABLE.getStatusCode());
+		// formats
+		if (validate.username && !Pattern.matches("[a-zA-Z]{2,24}", this.username))
+			throw new ApiException(Constants.Strings.USERNAME_CAN_ONLY_CONTAIN_BETWEEN_2_AND_24_LETTERS, Status.NOT_ACCEPTABLE.getStatusCode());
+		if (validate.email && !EmailValidator.getInstance().isValid(this.email))
+			throw new ApiException(Constants.Strings.INVALID_EMAIL_ADDRESS, Status.NOT_ACCEPTABLE.getStatusCode());
+	}
+	
+	public void load() throws Exception
+	{
+		try (PreparedStatement psm = Database.prepareStatement("select uuid,created_at,updated_at,deleted_at,username,display_name from users where username = lower(?) and deleted_at is null"))
+		{
+			psm.setString(1, this.username);
+			try (ResultSet rs = psm.executeQuery())
+			{
+				if (!rs.next())
+					throw new ApiException(Constants.Strings.USER_DOES_NOT_EXIST, Status.NOT_FOUND.getStatusCode());
+				User user = User.fromResultSet(rs);
+				this.uuid = user.uuid;
+				this.createdAt = user.createdAt;
+				this.updatedAt = user.updatedAt;
+				this.deletedAt = user.deletedAt;
+				this.username = user.username;
+				this.displayName = user.displayName;
+			}
+		}
 	}
 	
 	public void save() throws Exception
@@ -108,6 +155,15 @@ public class User
 		catch (SQLException ex)
 		{
 			throw new ApiException(ex.getMessage(), Status.CONFLICT.getStatusCode());
+		}
+		try (PreparedStatement psm = Database.prepareStatement("select uuid from users where username=lower(?)"))
+		{
+			psm.setString(1, this.username);
+			try (ResultSet rs = psm.executeQuery())
+			{
+				if (rs.next())
+					this.uuid = rs.getString("uuid");
+			}
 		}
 	}
 }
