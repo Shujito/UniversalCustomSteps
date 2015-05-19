@@ -22,7 +22,6 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.server.ServerProperties;
 import org.glassfish.jersey.servlet.ServletContainer;
-import org.shujito.ucs.sockets.ChatSocketServlet;
 
 public class Application
 {
@@ -104,8 +103,6 @@ public class Application
 		ServletContextHandler serverContextHandler = new ServletContextHandler(server, "/api", ServletContextHandler.SESSIONS);
 		// api errors
 		serverContextHandler.setErrorHandler(new ApiErrorHandler());
-		// sock
-		serverContextHandler.addServlet(ChatSocketServlet.class, "/chat/*");
 		// make a holder for servlets
 		ServletHolder servletHolder = serverContextHandler.addServlet(ServletContainer.class, "/*");
 		servletHolder.setInitOrder(0);
