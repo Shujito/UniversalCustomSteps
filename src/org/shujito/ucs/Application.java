@@ -105,7 +105,7 @@ public class Application
 		// api errors
 		serverContextHandler.setErrorHandler(new ApiErrorHandler());
 		// sock
-		serverContextHandler.addServlet(ChatSocketServlet.class, "/chat");
+		serverContextHandler.addServlet(ChatSocketServlet.class, "/chat/*");
 		// make a holder for servlets
 		ServletHolder servletHolder = serverContextHandler.addServlet(ServletContainer.class, "/*");
 		servletHolder.setInitOrder(0);
