@@ -32,7 +32,7 @@
 	</style>
 	<script type="text/javascript">
 		window.onload = function() {
-			var ws = new WebSocket('ws://' + window.location.host + '/api/chat');
+			var ws = new WebSocket('ws://' + window.location.host + '/api/chat/');
 			var messageInput = document.getElementById('message');
 			var messages = document.getElementById('messages')
 			function send(msg) {
