@@ -2,11 +2,6 @@ package org.shujito.ucs;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,55 +21,6 @@ import org.glassfish.jersey.servlet.ServletContainer;
 public class Application
 {
 	public static final String TAG = Application.class.getSimpleName();
-	
-	public static void __main(String[] args) throws Exception
-	{
-		try (Connection conn = DriverManager.getConnection("jdbc:sqlite::memory:"))
-		{
-			try (Statement smt = conn.createStatement())
-			{
-				smt.setQueryTimeout(30);
-				smt.executeUpdate("create table if not exists touhous("
-					+ "uuid text not null on conflict fail default (hex(randomblob(16))),"
-					+ "name text not null on conflict fail,"
-					+ "last_name text not null on conflict fail,"
-					+ "primary key (uuid) on conflict replace"
-					+ ")");
-				//smt.executeUpdate("insert into touhous(name,last_name) values('reimu','hakurei')");
-				//smt.executeUpdate("insert into touhous(name,last_name) values('marisa','kirisame')");
-				//smt.executeUpdate("insert into touhous(name,last_name) values('wriggle','nightbug')");
-				//smt.executeUpdate("insert into touhous(name,last_name) values('patchouli','knowledge')");
-			}
-			try (PreparedStatement smt = conn.prepareStatement("insert into touhous(name,last_name) values(?,?)"))
-			{
-				smt.setString(1, "reimu");
-				smt.setString(2, "hakurei");
-				smt.executeUpdate();
-				smt.setString(1, "marisa");
-				smt.setString(2, "kirisame");
-				smt.executeUpdate();
-				smt.setString(1, "sakuya");
-				smt.setString(2, "izayoi");
-				smt.executeUpdate();
-				smt.setString(1, "meiling");
-				smt.setString(2, "hong");
-				smt.executeUpdate();
-			}
-			try (Statement smt = conn.createStatement())
-			{
-				try (ResultSet rs = smt.executeQuery("select * from touhous"))
-				{
-					while (rs.next())
-					{
-						System.out.println("------");
-						System.out.println("id: '" + rs.getString("uuid") + "'");
-						System.out.println("name: '" + rs.getString("name") + "'");
-						System.out.println("last name: '" + rs.getString("last_name") + "'");
-					}
-				}
-			}
-		}
-	}
 	
 	public static void main(String[] args) throws Exception
 	{
