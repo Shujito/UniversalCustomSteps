@@ -38,7 +38,14 @@ public class Crypto
 	
 	public static byte[] base64decode(String base64String)
 	{
-		return Base64.getDecoder().decode(base64String);
+		try
+		{
+			return Base64.getDecoder().decode(base64String);
+		}
+		catch (Exception ex)
+		{
+			return null;
+		}
 	}
 	
 	public static String base64encode(byte[] rawBytes)
