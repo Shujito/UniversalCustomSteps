@@ -5,6 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 
+import javax.ws.rs.core.Response.Status;
+
+import org.shujito.ucs.ApiException;
+import org.shujito.ucs.Constants;
 import org.shujito.ucs.Crypto;
 import org.shujito.ucs.db.Database;
 
@@ -36,6 +40,27 @@ public class UserPassword
 			}
 		}
 		return up;
+	}
+	
+	public static UserPassword fromUsername(String username) throws Exception
+	{
+		try (PreparedStatement psm = Database.prepareStatement("select "
+			+ "users.uuid as user_uuid,"
+			+ "user_passwords.password as password,"
+			+ "user_passwords.salt as salt"
+			+ " from users"
+			+ " inner join user_passwords"
+			+ " on users.uuid=user_passwords.user_uuid"
+			+ " where users.username=lower(?)"))
+		{
+			psm.setString(1, username);
+			try (ResultSet rs = psm.executeQuery())
+			{
+				if (!rs.next())
+					throw new ApiException(Constants.Strings.USER_DOES_NOT_EXIST, Status.NOT_FOUND.getStatusCode());
+				return UserPassword.fromResultSet(rs);
+			}
+		}
 	}
 	
 	public String userUuid;

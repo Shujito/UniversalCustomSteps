@@ -4,13 +4,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.validator.routines.EmailValidator;
 import org.shujito.ucs.ApiException;
 import org.shujito.ucs.Constants;
+import org.shujito.ucs.Crypto;
 import org.shujito.ucs.db.Database;
 
 import com.google.gson.annotations.SerializedName;
@@ -49,6 +54,42 @@ public class User
 	public static final String PASSWORD = "password";
 	public static final String PASSWORD_SALT = "password_salt";
 	public static final String EMAIL = "email";
+	
+	public static List<User> getAll() throws Exception
+	{
+		try (Statement smt = Database.createStatement())
+		{
+			try (ResultSet rs = smt
+				.executeQuery("select uuid,created_at,display_name as username from users where deleted_at is null order by username asc"))
+			{
+				List<User> users = new ArrayList<>();
+				while (rs.next())
+				{
+					User user = User.fromResultSet(rs);
+					users.add(user);
+				}
+				return users;
+			}
+		}
+	}
+	
+	public static User fromUuid(String uuid) throws Exception
+	{
+		try (PreparedStatement smt = Database
+			.prepareStatement("select created_at,display_name as username from users where uuid = ? and deleted_at is null"))
+		{
+			smt.setString(1, uuid);
+			try (ResultSet rs = smt.executeQuery())
+			{
+				if (rs.next())
+				{
+					User user = User.fromResultSet(rs);
+					return user;
+				}
+			}
+			throw new ApiException(Constants.Strings.USER_DOES_NOT_EXIST, Status.NOT_FOUND.getStatusCode());
+		}
+	}
 	
 	public static User fromResultSet(ResultSet rs) throws Exception
 	{
@@ -104,6 +145,64 @@ public class User
 	public String email;
 	@SerializedName(PASSWORD)
 	public String password;
+	private Exception exception;
+	
+	public User()
+	{
+	}
+	
+	public User(@HeaderParam("access-token") String accessToken, @HeaderParam("user-agent") String userAgent) throws Exception
+	{
+		if (accessToken == null)
+		{
+			this.exception = new ApiException(Constants.Strings.ACCESS_DENIED, Status.FORBIDDEN.getStatusCode());
+			return;
+		}
+		if (accessToken.length() != 44)
+		{
+			this.exception = new ApiException(Constants.Strings.MALFORMED_ACCESS_TOKEN, Status.FORBIDDEN.getStatusCode());
+			return;
+		}
+		byte[] tokenBytes = Crypto.base64decode(accessToken);
+		try (PreparedStatement psm = Database
+			.prepareStatement("select "
+				+ "users.uuid,"
+				+ "users.created_at,"
+				+ "users.updated_at,"
+				+ "users.username,"
+				+ "users.display_name,"
+				+ "users.email"
+				+ " from users"
+				+ " inner join sessions"
+				+ " on users.uuid=sessions.user_uuid"
+				+ " where users.deleted_at is null"
+				+ " and datetime(sessions.expires_at/1000,'unixepoch','localtime') > datetime('now','localtime')"
+				+ " and sessions.access_token=?"))
+		{
+			psm.setBytes(1, tokenBytes);
+			try (ResultSet rs = psm.executeQuery())
+			{
+				if (!rs.next())
+					throw new ApiException(Constants.Strings.ACCESS_DENIED, Status.FORBIDDEN.getStatusCode());
+				this.loadResultSet(rs);
+			}
+		}
+		catch (Exception ex)
+		{
+			this.exception = ex;
+		}
+	}
+	
+	private void loadResultSet(ResultSet rs) throws Exception
+	{
+		User user = User.fromResultSet(rs);
+		this.uuid = user.uuid;
+		this.createdAt = user.createdAt;
+		this.updatedAt = user.updatedAt;
+		this.deletedAt = user.deletedAt;
+		this.username = user.username;
+		this.displayName = user.displayName;
+	}
 	
 	public void validate(Validation validate)
 	{
@@ -123,22 +222,29 @@ public class User
 			throw new ApiException(Constants.Strings.INVALID_EMAIL_ADDRESS, Status.NOT_ACCEPTABLE.getStatusCode());
 	}
 	
+	public void continueOrThrow() throws Exception
+	{
+		if (this.exception != null)
+			throw this.exception;
+	}
+	
 	public void load() throws Exception
 	{
-		try (PreparedStatement psm = Database.prepareStatement("select uuid,created_at,updated_at,deleted_at,username,display_name from users where username = lower(?) and deleted_at is null"))
+		try (PreparedStatement psm = Database.prepareStatement("select "
+			+ "uuid,"
+			+ "created_at,"
+			+ "updated_at,"
+			+ "deleted_at,"
+			+ "username,"
+			+ "display_name"
+			+ " from users where username = lower(?) and deleted_at is null"))
 		{
 			psm.setString(1, this.username);
 			try (ResultSet rs = psm.executeQuery())
 			{
 				if (!rs.next())
 					throw new ApiException(Constants.Strings.USER_DOES_NOT_EXIST, Status.NOT_FOUND.getStatusCode());
-				User user = User.fromResultSet(rs);
-				this.uuid = user.uuid;
-				this.createdAt = user.createdAt;
-				this.updatedAt = user.updatedAt;
-				this.deletedAt = user.deletedAt;
-				this.username = user.username;
-				this.displayName = user.displayName;
+				this.loadResultSet(rs);
 			}
 		}
 	}

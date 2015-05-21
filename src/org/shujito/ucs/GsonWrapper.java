@@ -80,7 +80,8 @@ public class GsonWrapper
 			throw new RuntimeException();
 		ExcludeFieldsWithoutSerializedName efwosn = new ExcludeFieldsWithoutSerializedName();
 		this.mGson = new GsonBuilder()
-			//.setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+			.setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+			//.disableHtmlEscaping()
 			.addDeserializationExclusionStrategy(efwosn)
 			.addSerializationExclusionStrategy(efwosn)
 			.registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64Serializer())

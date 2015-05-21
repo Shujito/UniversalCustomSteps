@@ -1,12 +1,7 @@
 package org.shujito.ucs.controllers;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Singleton;
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -20,7 +15,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.shujito.ucs.ApiException;
 import org.shujito.ucs.Constants;
-import org.shujito.ucs.db.Database;
 import org.shujito.ucs.models.Session;
 import org.shujito.ucs.models.User;
 import org.shujito.ucs.models.User.Validation;
@@ -37,38 +31,22 @@ public class Users
 	@GET
 	public synchronized Response index() throws Exception
 	{
-		try (Statement smt = Database.createStatement())
-		{
-			try (ResultSet rs = smt.executeQuery("select uuid,created_at,display_name as username from users where deleted_at is null order by username asc"))
-			{
-				List<User> users = new ArrayList<>();
-				while (rs.next())
-				{
-					User user = User.fromResultSet(rs);
-					users.add(user);
-				}
-				return Response.ok(users).build();
-			}
-		}
+		return Response.ok(User.getAll()).build();
 	}
 	
 	@GET
 	@Path("{uuid}")
 	public synchronized Response index(@PathParam("uuid") String uuid) throws Exception
 	{
-		try (PreparedStatement smt = Database.prepareStatement("select created_at,display_name as username from users where uuid = ? and deleted_at is null"))
-		{
-			smt.setString(1, uuid);
-			try (ResultSet rs = smt.executeQuery())
-			{
-				if (rs.next())
-				{
-					User user = User.fromResultSet(rs);
-					return Response.ok(user).build();
-				}
-			}
-		}
-		throw new ApiException(Constants.Strings.USER_DOES_NOT_EXIST, Status.NOT_FOUND.getStatusCode());
+		return Response.ok(User.fromUuid(uuid)).build();
+	}
+	
+	@GET
+	@Path("/me")
+	public synchronized Response me(@BeanParam User user) throws Exception
+	{
+		user.continueOrThrow();
+		return Response.ok(user).build();
 	}
 	
 	@POST
@@ -96,29 +74,12 @@ public class Users
 		if (user == null)
 			throw new ApiException(Constants.Strings.MISSING_CONTENT_BODY, Status.NOT_ACCEPTABLE.getStatusCode());
 		user.validate(new Validation(true, true, false));
-		try (PreparedStatement psm = Database.prepareStatement("select "
-			+ "users.uuid as user_uuid,"
-			+ "user_passwords.password as password,"
-			+ "user_passwords.salt as salt"
-			+ " from users"
-			+ " inner join user_passwords"
-			+ " on users.uuid=user_passwords.user_uuid"
-			+ " where users.username=lower(?)"))
-		{
-			psm.setString(1, user.username);
-			try (ResultSet rs = psm.executeQuery())
-			{
-				if (!rs.next())
-					throw new ApiException(Constants.Strings.USER_DOES_NOT_EXIST, Status.NOT_FOUND.getStatusCode());
-				UserPassword sup = UserPassword.fromResultSet(rs);
-				UserPassword oup = new UserPassword(user.password.getBytes(), sup.salt);
-				//oup.hashPassword();
-				if (!sup.equals(oup))
-					throw new ApiException(Constants.Strings.INVALID_CREDENTIALS, Status.FORBIDDEN.getStatusCode());
-				Session session = new Session(sup.userUuid, userAgent);
-				session.save();
-				return Response.ok(session).build();
-			}
-		}
+		UserPassword sup = UserPassword.fromUsername(user.username);
+		UserPassword oup = new UserPassword(user.password.getBytes(), sup.salt);
+		if (!sup.equals(oup))
+			throw new ApiException(Constants.Strings.INVALID_CREDENTIALS, Status.FORBIDDEN.getStatusCode());
+		Session session = new Session(sup.userUuid, userAgent);
+		session.save();
+		return Response.ok(session).build();
 	}
 }
