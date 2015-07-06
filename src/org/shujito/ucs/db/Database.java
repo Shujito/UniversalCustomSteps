@@ -42,7 +42,37 @@ public final class Database
 					+ "expires_at integer not null on conflict ignore default (cast(((julianday('now','+10 minutes') - julianday('1970-01-01')) * 86400000) as integer)),"
 					+ "user_agent text not null on conflict fail,"
 					+ "foreign key (user_uuid) references users(uuid)"
-					+ ");");
+					+ ")");
+				smt.executeUpdate("create table if not exists groups ("
+					+ "id integer not null on conflict fail,"
+					+ "name text not null on conflict fail,"
+					+ "primary key (id) on conflict fail"
+					+ ")");
+				smt.executeUpdate("create table if not exists songs ("
+					+ "id integer not null on conflict fail,"
+					+ "group_id integer not null on conflict fail,"
+					+ "ucs text not null on conflict fail,"
+					+ "bpm real not null on conflict fail,"
+					+ "delay real not null on conflict fail,"
+					+ "artist text not null on conflict fail,"
+					+ "name text not null on conflict fail,"
+					+ "foreign key (group_id) references groups(id),"
+					+ "primary key (id) on conflict fail"
+					+ ")");
+				smt.executeUpdate("create table if not exists steps ("
+					+ "uuid text not null on conflict fail default (lower(hex(randomblob(16)))),"
+					+ "created_at integer not null on conflict ignore default (cast(((julianday('now') - julianday('1970-01-01')) * 86400000) as integer)),"
+					+ "updated_at integer not null on conflict ignore default (cast(((julianday('now') - julianday('1970-01-01')) * 86400000) as integer)),"
+					+ "deleted_at integer,"
+					+ "song_id integer not null on conflict fail,"
+					+ "user_uuid text not null on conflict fail,"
+					+ "step_data blob not null on conflict fail,"
+					+ "description text not null on conflict fail,"
+					+ "difficulty integer not null on conflict fail,"
+					+ "foreign key (song_id) references songs(id),"
+					+ "foreign key (user_uuid) references users(uuid),"
+					+ "primary key (uuid) on conflict replace"
+					+ ")");
 			}
 			//sConnection.commit();
 		}

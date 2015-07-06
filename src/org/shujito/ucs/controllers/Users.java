@@ -20,6 +20,10 @@ import org.shujito.ucs.models.User;
 import org.shujito.ucs.models.User.Validation;
 import org.shujito.ucs.models.UserPassword;
 
+/**
+ * Register, login, list and do stuff with users here.
+ * @author shujito
+ */
 @Path("/users")
 @Singleton
 @Consumes(MediaType.APPLICATION_JSON)
@@ -28,12 +32,23 @@ public class Users
 {
 	public static final String TAG = Users.class.getSimpleName();
 	
+	/**
+	 * List users
+	 * @return
+	 * @throws Exception
+	 */
 	@GET
 	public synchronized Response index() throws Exception
 	{
 		return Response.ok(User.getAll()).build();
 	}
 	
+	/**
+	 * Find a user by its uuid
+	 * @param uuid of the user to look for
+	 * @return the user object
+	 * @throws Exception
+	 */
 	@GET
 	@Path("{uuid}")
 	public synchronized Response index(@PathParam("uuid") String uuid) throws Exception
@@ -41,6 +56,12 @@ public class Users
 		return Response.ok(User.fromUuid(uuid)).build();
 	}
 	
+	/**
+	 * Get the current user info
+	 * @param user
+	 * @return a user object
+	 * @throws Exception
+	 */
 	@GET
 	@Path("/me")
 	public synchronized Response me(@BeanParam User user) throws Exception
@@ -49,6 +70,12 @@ public class Users
 		return Response.ok(user).build();
 	}
 	
+	/**
+	 * Register a new user
+	 * @param user data comes from POST request body
+	 * @return a 201 response with the created user info
+	 * @throws Exception
+	 */
 	@POST
 	@Path("/register")
 	public synchronized Response register(User user) throws Exception
@@ -67,6 +94,13 @@ public class Users
 		return Response.created(null).entity(user).build();
 	}
 	
+	/**
+	 * Logs a user in
+	 * @param user data comes from POST request body
+	 * @param userAgent
+	 * @return a response with a {@link Session} object
+	 * @throws Exception
+	 */
 	@POST
 	@Path("/login")
 	public synchronized Response login(User user, @HeaderParam("user-agent") String userAgent) throws Exception
