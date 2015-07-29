@@ -84,13 +84,8 @@ public class Users
 			throw new ApiException(Constants.Strings.MISSING_CONTENT_BODY, Status.NOT_ACCEPTABLE.getStatusCode());
 		user.validate(new Validation(true, true, true));
 		user.save();
-		UserPassword up = new UserPassword(user.password);
-		up.save(user.username);
-		user.createdAt = null;
-		user.updatedAt = null;
-		user.deletedAt = null;
-		user.displayName = null;
-		user.password = null;
+		UserPassword up = new UserPassword(user.getPassword());
+		up.save(user.getUsername());
 		return Response.created(null).entity(user).build();
 	}
 	
@@ -108,11 +103,11 @@ public class Users
 		if (user == null)
 			throw new ApiException(Constants.Strings.MISSING_CONTENT_BODY, Status.NOT_ACCEPTABLE.getStatusCode());
 		user.validate(new Validation(true, true, false));
-		UserPassword sup = UserPassword.fromUsername(user.username);
-		UserPassword oup = new UserPassword(user.password.getBytes(), sup.salt);
-		if (!sup.equals(oup))
+		UserPassword savedUserPassword = UserPassword.fromUsername(user.getUsername());
+		UserPassword originalUserPassword = new UserPassword(user.getPassword().getBytes(), savedUserPassword.salt);
+		if (!savedUserPassword.equals(originalUserPassword))
 			throw new ApiException(Constants.Strings.INVALID_CREDENTIALS, Status.FORBIDDEN.getStatusCode());
-		Session session = new Session(sup.userUuid, userAgent);
+		Session session = new Session(savedUserPassword.userUuid, userAgent);
 		session.save();
 		return Response.ok(session).build();
 	}

@@ -7,7 +7,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.shujito.ucs.ApiException;
+import org.shujito.ucs.models.Song;
 
 @Path("/songs")
 @Singleton
@@ -15,8 +15,8 @@ import org.shujito.ucs.ApiException;
 public class Songs
 {
 	@GET
-	public synchronized Response index()
+	public synchronized Response index() throws Exception
 	{
-		throw new ApiException(null, 404);
+		return Response.ok(Song.getAll()).build();
 	}
 }

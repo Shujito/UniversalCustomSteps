@@ -1,0 +1,173 @@
+Banya / Production / Remixed
+
+CS001	195	3805	BanYa	EXtravaganza
+CS002	130.5	1920	BanYa	Final Audition
+CS003	135	60	BanYa	Pumping Up
+CS004	230	1117.5	BanYa	She Likes Pizza
+CS005	80	515	BanYa	Midnight Blue
+CS006	99	2340	BanYa	Free Style
+CS007	105	4692.5	BanYa	Close Your Eye
+CS008	120	5980	BanYa	A Nightmare
+CS009	150	4325	BanYa	Turkey March
+CS010	136	1195.5	BanYa	Naissance
+CS011	130	6200	BanYa	Final Audition 2
+CS012	190	1755	BanYa	Mr. Larpus
+CS013	136	35	BanYa	Solitary
+CS014	92	105	BanYa	Betrayer
+CS015	104	115	BanYa	First Love
+CS016	148	1725	BanYa	Oh! Rosa
+CS017	162	187.5	BanYa	Beethoven Virus
+CS018	130	5618	BanYa	All I Want For X-mas
+CS019	142	160	BanYa	Rolling Christmas
+CS020	106	627	BanYa	N
+CS021	106	2275	BanYa	Pump Jump
+CS047	189	182.5	BanYa	Final Audition Ep. 1
+CS048	200	127.5	BanYa	CHICKEN WING
+CS022	180	65	BanYa	CSIKOS POST
+CS023	184	115	BanYa	Vook
+CS024	122	792	BanYa	Dance with me
+CS025	120	2140	BanYa	Set me up
+CS026	111	1115	BanYa	Miss S' story
+CS027	118	707.5	BanYa	We will meet again
+CS028	148	645	BanYa	Oy oy oy
+CS029	140	1140	BanYa	Till the end of time
+CS030	210	85	BanYa	Will o' The Wisp
+CS031	168	1445	BanYa	Winter
+CS032	110.8	895	BanYa	Top City
+CS033	124	100	BanYa	Street show down
+CS034	92	55	BanYa	Point Break
+CS035	118	95	BanYa	My way
+CS036	124	840	BanYa	Mission Possible
+CS037	136	790	BanYa	Maria
+CS038	140	25	BanYa	Love is a Danger Zone
+CS039	96	940	BanYa	Get Your Groove On
+CS040	150	815	BanYa	Emperor
+CS041	145	45	BanYa	Dr. M
+CS042	100,107	40	BanYa	Come to Me
+CS043	???	62.5	BanYa	Beat of The War
+CS044	140	90	BanYa	Hello
+CS045	150	75	BanYa	D Gang
+CS046	160	139	BanYa	Bee
+CS049	180	77.5	BanYa	Get Up
+CS050	162	107.5	BanYa	X Treme
+CS051	170	172.5	BanYa	Pump Me Amadeus
+CS052	158	90	BanYa	Blazing
+CS053	186	222.5	BanYa	Monkey Fingers
+CS054	129	85	BanYa	Naissance 2
+CS055	130.5	-67.5	BanYa	Final Audition 3
+CS056	160	90	BanYa	Canon D
+CS057	136	-250	BanYa	Solitary 2
+CS058	145	82.5	BanYa	Hi Bi
+CS059	140	82.5	BanYa	J Bong
+CS060	145	112.5	BanYa	Papa Gonzales
+CS061	136	52.5	BanYa	Phantom
+CS062	162	800	BanYa	Love is a Danger Zone pt. 2
+CS063	195	82.5	BanYa	Witch Doctor
+CS064	180	40	BanYa	Moonlight
+CS065	???	52.5	BanYa	Beat of The War 2
+CS066	162	795	BanYa	Love is a Danger Zone pt.2 (Another)
+CS069	92	80	Banya Production	Ugly Dee
+CS070	168	55	Banya Production	Bullfighter's Song
+CS071	104	48	Banya Production	Gun Rock
+CS072	120	70	Banya Production	Do U Know That-Old School
+CS073	96	130	Banya Production	2006. LOVE SONG
+CS077	120	60	Banya Production	Jam O Beat
+CS078	150	67.5	Banya Production	Higgledy Piggledy
+CS079	120	70	Banya Production	Guitar Man
+CS082	180	74	Banya Production	Monkey Fingers 2
+CS083	130	60	Banya Production	Money
+CS084	160	73.5	Banya Production	Caprice of Otada
+CS085	124	45	Banya Production	Beat the ghost
+CS089	104	67	Banya Production	Toccata
+CS090	136	84.5	Banya Production	My Dreams
+CS091	156	110	Banya Production	K.O.A : Alice In Wonderworld
+CS092	180	82.5	Banya Production	DJ Otada
+CS093	134	80	Banya Production	The People didn't know
+CS099	116	-460	Banya Production	Pumping Jumping
+CS100	128	125	Banya Production	Mission Possible -Blow Back
+CS101	140	70	Banya Production	Phantom -Intermezzo
+CS102	164	105	Banya Production	Get Up (and go)
+CS103	130	95	Banya Production	Turkey March -Minimal Tunes
+CS104	170	92.5	Banya Production	Hello William
+CS105	132	70	Banya Production	Tek -Club Copenhagen
+CS106	160	60	Banya Production	Arirang
+CS107	152	25	Banya Production	Xenesis
+CS108	96	72.5	Banya Production	Do It Reggae Style
+CS119	130,240	90	Banya Production	The Devil
+CS120	145	80	Banya Production	Hungarian Dance V
+CS149	175	27	BanYa & SynthWulf	Hypnosis(SynthWulf Mix)
+CS150	155	212	BanYa & Cranky	Love Is A Danger Zone(Cranky Mix)
+CS151	220	52	BanYa & DM Ashura	Ignis Fatuus(DM Ashura Mix)
+
+YAHPP
+
+CS076	122	85	YAHPP	Witch Doctor #1
+CS075	135	0	YAHPP	Arch of Darkness
+CS074	210	120	YAHPP	Chimera
+CS068	170	67	YAHPP	Final Audition Ep. 2-1
+CS067	200	72.5	YAHPP	Final Audition Ep. 2-2
+CS086	136	100	YAHPP	Solitary 1.5
+CS081	162	115	YAHPP	Faster Z
+CS080	153	67.5	YAHPP	Pumptris Quattro
+CS096	170	105	YAHPP	Blaze Emotion
+CS095	185	167.5	YAHPP	CannonX.1
+CS094	128	145	YAHPP	Chopsticks Challenge
+CS088	170	110	YAHPP	Final Audition EP. 2-X
+CS087	152	85	YAHPP	Pumptris 8Bit ver.
+CS114	190	-1142.5	YAHPP	XTREE
+CS113	158	-1320	YAHPP	Sorceress Eliese
+
+msgoon
+
+CS112	92	-510	msgoon	Betrayer -act.2-
+
+Doin
+
+CS109	200	220	Doin	Vacuum
+CS098	145	963	Doin	Tepris
+CS097	185	75	Doin	Napalm
+CS127	203	65	Doin	Cleaner
+CS126	180.4	365	Doin	Interference
+CS117	200	80	Doin	Pine Nut
+CS116	170	112	Doin	ASDF
+CS115	155	-738	Doin	Says
+CS128	140	45	A.V.	Night Duty
+CS129	160.81	90	V.A.	Pavane
+CS148	200	32	Doin	FFF
+
+SHK
+
+CS110	150	80	SHK	Destination
+CS118	135	50	SHK	Native
+CS125	135	55	SHK	Reality
+CS124	170	48	SHK	Take Out
+CS147	145	36	SHK	Unique
+
+MAX
+
+CS111	127	77.5	MAX	U Got 2 Know
+CS121	128	55	MAX	We Got 2 Know
+CS122	155	65	MAX	Overblow
+CS123	128	977	MAX & Rorychesell(SID-SOUND)	Butterfly
+CS130	140	-650	MAX & Seorryang(SID-SOUND)	Jonathan's Dream
+CS144	128	19.5	MAX	U Got Me Rocking
+CS145	180	-138	MAX	D
+CS146	183	47	MAX	Accident
+
+DM Ashura
+
+CS152	162	807	DM Ashura	Elise
+
+PIU Pro Series Crossovers
+
+CS142	196	55	Affinity	Monolith
+CS141	112	-515	Celldweller	Switchback
+CS140	133	55	Coconut	Ladybug
+CS139	190	95	Diclonius Kid	Hardkore of the North
+CS138	128	80	Future Funk Squad	Rippin' It Up
+CS137	150	90	Hi-G	Tribe Attacker
+CS136	180	42.5	Inspector K	Virtual Emotion
+CS135	185	695	KURi-ZiLL	Heel and Toe
+CS133	125	47.5	Sanxion7	Rainspark
+CS132	142	75	Stian	K Be Alive (Raaban Inc. Mix)
+CS131	155	45	Zircon	Star Command

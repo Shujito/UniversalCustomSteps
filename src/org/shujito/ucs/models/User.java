@@ -130,21 +130,21 @@ public class User
 	}
 	
 	@SerializedName(UUID)
-	public String uuid;
+	private String uuid;
 	@SerializedName(CREATED_AT)
-	public Long createdAt;
+	private Long createdAt;
 	@SerializedName(UPDATED_AT)
-	public Long updatedAt;
+	private Long updatedAt;
 	@SerializedName(DELETED_AT)
-	public Long deletedAt;
+	private Long deletedAt;
 	@SerializedName(USERNAME)
-	public String username;
+	private String username;
 	@SerializedName(DISPLAY_NAME)
-	public String displayName;
+	private String displayName;
 	@SerializedName(EMAIL)
-	public String email;
+	private String email;
 	@SerializedName(PASSWORD)
-	public String password;
+	private String password;
 	private Exception exception;
 	
 	public User()
@@ -191,6 +191,46 @@ public class User
 		{
 			this.exception = ex;
 		}
+	}
+	
+	public String getUuid()
+	{
+		return this.uuid;
+	}
+	
+	public Long getCreatedAt()
+	{
+		return this.createdAt;
+	}
+	
+	public Long getUpdatedAt()
+	{
+		return this.updatedAt;
+	}
+	
+	public Long getDeletedAt()
+	{
+		return this.deletedAt;
+	}
+	
+	public String getUsername()
+	{
+		return this.username;
+	}
+	
+	public String getDisplayName()
+	{
+		return this.displayName;
+	}
+	
+	public String getEmail()
+	{
+		return this.email;
+	}
+	
+	public String getPassword()
+	{
+		return this.password;
 	}
 	
 	private void loadResultSet(ResultSet rs) throws Exception
