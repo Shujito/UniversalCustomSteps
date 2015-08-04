@@ -66,7 +66,7 @@ public final class Database
 					+ "foreign key (group_id) references groups(id),"
 					+ "foreign key (song_id) references songs(id)"
 					+ ")");
-				smt.executeUpdate("create table if not exists steps ("
+				smt.executeUpdate("create table if not exists charts ("
 					+ "uuid text not null on conflict fail default (lower(hex(randomblob(16)))),"
 					+ "created_at integer not null on conflict ignore default (cast(((julianday('now') - julianday('1970-01-01')) * 86400000) as integer)),"
 					+ "updated_at integer not null on conflict ignore default (cast(((julianday('now') - julianday('1970-01-01')) * 86400000) as integer)),"

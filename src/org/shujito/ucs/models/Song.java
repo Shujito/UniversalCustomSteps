@@ -69,17 +69,17 @@ public class Song
 		return song;
 	}
 	
-	@SerializedName(value = ID)
+	@SerializedName(ID)
 	private int id;
-	@SerializedName(value = UCS)
+	@SerializedName(UCS)
 	private String ucs;
-	@SerializedName(value = BPM)
+	@SerializedName(BPM)
 	private double bpm;
-	@SerializedName(value = DELAY)
+	@SerializedName(DELAY)
 	private double delay;
-	@SerializedName(value = ARTIST)
+	@SerializedName(ARTIST)
 	private String artist;
-	@SerializedName(value = NAME)
+	@SerializedName(NAME)
 	private String name;
 	
 	private Song()
